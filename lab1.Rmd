@@ -162,7 +162,7 @@ plot(Y)
 The myvar function does not work well for vectors with large mean ( >= 10^7 ).
 The myvar functions gives good estimations with vectors of observations coming 
 from a Normal distribution until we get random values from N distributions with
-mean >= 10^7. 
+mean >= 10^7. The problem comes from the computation of the sum in the myvar function: Since our mean is 10^8 and we have up to 10^4 elements in the vector, the sum can get as big as 10^12 which is greater than the maximum value for integers in R which is ~2*10^9. We therefore run into a stack overflow issue which completely breaks our function. This problem is avoided for smaller means as the overflow limit is not reach when calculating the sums.
 
 
 
