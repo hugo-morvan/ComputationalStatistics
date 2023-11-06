@@ -18,8 +18,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Question 1
 
 ### a)
-Plot of the Likelyhood function :
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+Plot of the Likelihood function:
+
+```{r 1a-1, echo=FALSE, message=FALSE, warning=FALSE}
 library("ggplot2")
 log_likelyhood <- function(x){
   vec <- c(-2.8, 3.4, 1.2, -0.3, -2.6)
@@ -32,13 +33,12 @@ log_likelyhood <- function(x){
   return(res)
 }
 ggplot(data.frame(x=c(-4, 4)), aes(x=x)) + 
-  stat_function(fun=log_likelyhood) +
-  geom_vline(xintercept = -2.082124)
-
+  stat_function(fun=log_likelyhood)
 ```
 
-Plot of the first derivative of the likelyhood function
-```{r echo=FALSE}
+Plot of the first derivative of the likelihood function:
+
+```{r 1a-2, echo=FALSE, message=FALSE, warning=FALSE}
 first_derivative <- function(theta){
   vec <- c(-2.8, 3.4, 1.2, -0.3, -2.6)
   n <- 5
@@ -54,17 +54,16 @@ ggplot(data.frame(x=c(-4, 4)), aes(x=x)) +
 
 ```
 
-From this plot, we can see that the first derivative is equal to 0 in three locations
+From this plot, we can see that the first derivative is equal to 0 in three locations.
 
 ### b)
 
-```{r echo=FALSE}
+```{r 1b, echo=TRUE}
 bisection <- function(a,b, fun, acc){
   if( fun(a)*fun(b) >= 0 ){
     stop("Choose better boundaries")
   }
   t <- 0
-  
   while(round(a, acc) != round(b, acc)){
     mid <- (a+b)/2
     t <- t+1
@@ -78,25 +77,31 @@ bisection <- function(a,b, fun, acc){
       a <- mid
     }
   }
-  #cat("t:", t, "\n")
   return(a)
 }
 ```
 
 ### c)
-```{r local extremum 1, echo=FALSE}
+First optimum: 
+
+```{r local extremum 1, echo=TRUE}
 bisection(-3, -2, first_derivative, 9)
 ```
 
-```{r local extremum 2, echo=FALSE}
+Second optimum: 
+
+```{r local extremum 2, echo=TRUE}
 bisection(-2, -1, first_derivative, 9)
 ```
 
-```{r local extremum 3, echo=FALSE}
+Third optimum: 
+
+```{r local extremum 3, echo=TRUE}
 bisection(-1, 0, first_derivative, 9)
 ```
 
-We can check our result by adding the X values on the graph
+We can check our result by adding the X values on the graph:
+
 ```{r echo=FALSE}
 ggplot(data.frame(x=c(-4, 4)), aes(x=x)) + 
   stat_function(fun=first_derivative) +
@@ -106,35 +111,40 @@ ggplot(data.frame(x=c(-4, 4)), aes(x=x)) +
 
 ```
 
+To find the global maximum, we plug in the local maxima found into f(x): 
 ```{r echo=FALSE}
-print("first intercept")
-log_likelyhood(-2.082124)
-print("second intercept")
-log_likelyhood(-1.601775)
-print("third intercept")
-log_likelyhood(-0.2952455)
+cat("first intercept, f(x)=", log_likelyhood(-2.082124), "\n")
+cat("second intercept, f(x)=", log_likelyhood(-1.601775), "\n")
+cat("third intercept, f(x)=", log_likelyhood(-0.2952455), "\n")
 ```
- Based on the computation, the third local optima is the global maximum
+ Based on the computation, the third local optima is the global maximum:
  
 ```{r echo=FALSE}
-bisection(-4, 4, first_derivative, 9)
+cat("x = ", bisection(-4, 4, first_derivative, 9))
 ```
-  If our starting interval contains several local optima, it is not guaranteed that the bisection method finds the local maximum of that interval. 
+  If our starting interval contains several local optima, it is not guaranteed that the bisection method finds the local maximum of that interval, it is instead only finding one of the local optima that the interval contains. Otherwise, our function prevents the user from choosing an interval that does not contain a local optima.
 
 ### d)
 
 Pseudo-code to find all the local optima given a wide starting range [A,B] containing several optima.
+
 Step 1: set left boundary a to A, the left limit of our range. Set right boundary b to be slightly bigger than A such that the stopping condition of our while loop is not met (i.e. a != b, but very close)
+
 Step 2: Calculate f'(a)*f'(b). If the result is positive, increase the value of b until the result becomes negative. Once the result is negative, run the bisection function to find the optima and store it in a vector.
+
 Step 3: set the left boundary to be b (the previous right boundary)
+
 Step 4: Repeat steps 1,2,3 until the right boundary reaches the value of B, the end of our range. You should have found all of the optima between A and B.
+
 Step 5: Find the global maximum by comparing the values of the candidates in the vector into the original function f(x).
+
+_________________________________________________________
 
 ## Question 2
 
 ### a)
 
-```{r echo=FALSE}
+```{r echo=TRUE}
 myvar <- function(vector){
   n <- length(vector)
   var1 <- (1/(n-1))*(sum(vector^2)-(1/n)*(sum(vector))^2)
@@ -144,7 +154,7 @@ myvar <- function(vector){
 
 ### b)
 
-```{r echo=FALSE}
+```{r echo=TRUE}
 set.seed(69)
 vectorx <- rnorm(1E4, 1E8, 1)
 ```
@@ -160,9 +170,13 @@ plot(Y)
 ```
 
 The myvar function does not work well for vectors with large mean ( >= 10^7 ).
-The myvar functions gives good estimations with vectors of observations coming 
-from a Normal distribution until we get random values from N distributions with
-mean >= 10^7. The problem comes from the computation of the sum in the myvar function: Since our mean is 10^8 and we have up to 10^4 elements in the vector, the sum can get as big as 10^12 which is greater than the maximum value for integers in R which is ~2*10^9. We therefore run into a stack overflow issue which completely breaks our function. This problem is avoided for smaller means as the overflow limit is not reach when calculating the sums.
+The myvar functions gives good estimations with vectors of observations coming from a Normal distribution until we get random values from N distributions with mean >= 10^7. The problem comes from the computation of the sums in the myvar function: Since our mean is 10^8 and we have up to 10^4 elements in the vector, the sum can get as big as 10^12 which is greater than the maximum value for integers in R which is ~2*10^9 (32 bits). We therefore run into a stack overflow issue which completely breaks our function. This problem is avoided for smaller means as the overflow limit is not reached when calculating the sums.
+
+
+### d)
+By rearranging the formula, we can optimize the computation of the variance to avoid stack overflow:
+
+$\displaystyle \frac{1}{(n-1)}\sum_{1}^{n} (x_i - \overline{x})^2$
 
 ```{r echo=FALSE}
 myvarBETTER <- function(vector){
@@ -178,4 +192,69 @@ for (q in 2:1E4){
 plot(Y)
 ```
 
+This graph shows the difference between the myvarBETTER function and the var function. We can see that the difference is negligible. We do not run into the stack overflow issue, even for large means, because we calculate the difference to the mean squared inside of the summation, so we avoid computing a large summation of very large numbers.
+
+_______________________________________________________
+
+## Appendix
+
+### Question 1 a)
+Plot of the Likelihood function :
+```{r}
+library("ggplot2")
+log_likelyhood <- function(x){
+  vec <- c(-2.8, 3.4, 1.2, -0.3, -2.6)
+  n <- 5
+  sum_el <- 0
+  for(el in vec){
+    sum_el <- sum_el + log(1+ (el - x)^2)
+  }
+  res <- -n*log(pi) - sum_el
+  return(res)
+}
+ggplot(data.frame(x=c(-4, 4)), aes(x=x)) + 
+  stat_function(fun=log_likelyhood)
+```
+
+Plot of the first derivative of the likelihood function
+```{r}
+first_derivative <- function(theta){
+  vec <- c(-2.8, 3.4, 1.2, -0.3, -2.6)
+  n <- 5
+  sum_res <- 0
+  for(i in vec){
+    sum_res <- sum_res + 2*(i-theta)/(1+(i-theta)^2)
+  }
+  res <- sum_res
+  return(res)
+}
+ggplot(data.frame(x=c(-4, 4)), aes(x=x)) + 
+  stat_function(fun=first_derivative)
+
+```
+
+### Question 2 c)
+
+```{r echo=FALSE}
+Y <- rep(0,1E4)
+for (q in 2:1E4){
+  Y[q] <- myvar(vectorx[1:q]) - var(vectorx[1:q])
+}
+plot(Y)
+```
+
+### Question 2 d)
+```{r}
+myvarBETTER <- function(vector){
+  n <- length(vector)
+  var1 <- (1/(n-1))*(sum((vector - mean(vector))^2))
+  return(var1)
+}
+
+Y <- rep(0,1E4)
+for (q in 2:1E4){
+  Y[q] <- myvarBETTER(vectorx[1:q]) - var(vectorx[1:q])
+}
+plot(Y)
+```
 
