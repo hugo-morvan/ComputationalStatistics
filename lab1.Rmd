@@ -2,6 +2,8 @@
 title: "Lab1"
 output: html_document
 date: "2023-11-01"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -129,3 +131,45 @@ Step 4: Repeat steps 1,2,3 until the right boundary reaches the value of B, the 
 Step 5: Find the global maximum by comparing the values of the candidates in the vector into the original function f(x).
 
 ## Question 2
+
+### a)
+
+```{r echo=FALSE}
+myvar <- function(vector){
+  n <- length(vector)
+  var1 <- (1/(n-1))*(sum(vector^2)-(1/n)*(sum(vector))^2)
+  return(var1)
+}
+```
+
+### b)
+
+```{r echo=FALSE}
+set.seed(69)
+vectorx <- rnorm(1E4, 1E8, 1)
+```
+
+### c)
+
+```{r echo=FALSE}
+Y <- rep(0,1E4)
+for (q in 2:1E4){
+  Y[q] <- myvar(vectorx[1:q]) - var(vectorx[1:q])
+}
+plot(Y)
+```
+
+The myvar function does not work well for vectors with large mean ( >= 10^7 ).
+The myvar functions gives good estimations with vectors of observations coming 
+from a Normal distribution until we get random values from N distributions with
+mean >= 10^7. 
+
+
+
+
+
+
+
+
+
+
