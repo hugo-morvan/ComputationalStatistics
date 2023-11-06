@@ -1,8 +1,10 @@
 ---
-title: "Lab1"
-output: html_document
-date: "2023-11-01"
-editor_options: 
+title: "732A90 Lab 1"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-11-06"
+editor_options:
   chunk_output_type: console
 ---
 
@@ -10,7 +12,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Computational Statistics 732A90 - Fall 23
+# Computational Statistics - Fall 23
 # Computer Lab 1
 
 ### Hugo Morvan, Daniele Bozzoli
@@ -235,7 +237,7 @@ ggplot(data.frame(x=c(-4, 4)), aes(x=x)) +
 
 ### Question 2 c)
 
-```{r echo=FALSE}
+```{r}
 Y <- rep(0,1E4)
 for (q in 2:1E4){
   Y[q] <- myvar(vectorx[1:q]) - var(vectorx[1:q])
