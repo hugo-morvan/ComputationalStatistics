@@ -81,6 +81,7 @@ bisection <- function(a,b, fun, acc){
 }
 ```
 
+### c)
 ```{r local extremum 1, echo=FALSE}
 bisection(-3, -2, first_derivative, 9)
 ```
@@ -117,3 +118,14 @@ log_likelyhood(-0.2952455)
 bisection(-4, 4, first_derivative, 9)
 ```
   If our starting interval contains several local optima, it is not guaranteed that the bisection method finds the local maximum of that interval. 
+
+### d)
+
+Pseudo-code to find all the local optima given a wide starting range [A,B] containing several optima.
+Step 1: set left boundary a to A, the left limit of our range. Set right boundary b to be slightly bigger than A such that the stopping condition of our while loop is not met (i.e. a != b, but very close)
+Step 2: Calculate f'(a)*f'(b). If the result is positive, increase the value of b until the result becomes negative. Once the result is negative, run the bisection function to find the optima and store it in a vector.
+Step 3: set the left boundary to be b (the previous right boundary)
+Step 4: Repeat steps 1,2,3 until the right boundary reaches the value of B, the end of our range. You should have found all of the optima between A and B.
+Step 5: Find the global maximum by comparing the values of the candidates in the vector into the original function f(x).
+
+## Question 2
