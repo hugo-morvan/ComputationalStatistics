@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Computational Statistics - Fall 23
+
 # Computer Lab 1
 
 ### Hugo Morvan, Daniele Bozzoli
@@ -60,7 +61,8 @@ From this plot, we can see that the first derivative is equal to 0 in three loca
 
 ### b)
 
-```{r 1b, echo=TRUE}
+See Appendix Question 1 b)
+```{r 1b, echo=FALSE}
 bisection <- function(a,b, fun, acc){
   if( fun(a)*fun(b) >= 0 ){
     stop("Choose better boundaries")
@@ -146,7 +148,8 @@ _________________________________________________________
 
 ### a)
 
-```{r echo=TRUE}
+See Appendix Question 2 a)
+```{r echo=FALSE}
 myvar <- function(vector){
   n <- length(vector)
   var1 <- (1/(n-1))*(sum(vector^2)-(1/n)*(sum(vector))^2)
@@ -156,8 +159,9 @@ myvar <- function(vector){
 
 ### b)
 
-```{r echo=TRUE}
-set.seed(69)
+See Appendix Question 2 b)
+```{r echo=FALSE}
+set.seed(1234)
 vectorx <- rnorm(1E4, 1E8, 1)
 ```
 
@@ -233,6 +237,48 @@ first_derivative <- function(theta){
 ggplot(data.frame(x=c(-4, 4)), aes(x=x)) + 
   stat_function(fun=first_derivative)
 
+```
+
+### Question 1 b)
+
+```{r}
+bisection <- function(a,b, fun, acc){
+  if( fun(a)*fun(b) >= 0 ){
+    stop("Choose better boundaries")
+  }
+  t <- 0
+  while(round(a, acc) != round(b, acc)){
+    mid <- (a+b)/2
+    t <- t+1
+    gp_a <- fun(a)
+    gp_mid <- fun(mid)
+    gp_b <- fun(b)
+    if(gp_a * gp_mid <=0){
+      b <- mid
+    }
+    else{
+      a <- mid
+    }
+  }
+  return(a)
+}
+```
+
+### Question 2 a)
+
+```{r}
+myvar <- function(vector){
+  n <- length(vector)
+  var1 <- (1/(n-1))*(sum(vector^2)-(1/n)*(sum(vector))^2)
+  return(var1)
+}
+```
+
+### Question 2 b)
+
+```{r}
+set.seed(1234)
+vectorx <- rnorm(1E4, 1E8, 1)
 ```
 
 ### Question 2 c)
