@@ -1,0 +1,34 @@
+---
+title: "732A90 Lab 2"
+author: "Daniele Bozzi & Hugo Morvan"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1: Optimisation of a two-dimensional function
+
+### a)
+```{r}
+
+```
+
+
+### b)
+
+### c)
+
+### d)
+
+
+## Question 2:
+
+### a)
+
+### b)
+
+### c)
+
+### d)
