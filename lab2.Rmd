@@ -14,33 +14,42 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### a)
 ```{r}
-f <- function(x, y){
-  return(0)
+f <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-x^2 -x^2*y^2 -2*x*y +2*x +2)
 }
-f_x <- function(x,y){
+f_x <- function(p){
+  x <- p[1]
+  y <- p[2]
   return(-2*x -2*x*y^2 -2*y +2)
 }
-f_y <- function(x,y){
+f_y <- function(p){
+  x <- p[1]
+  y <- p[2]
   return(-2*x^2*y-2*x)
 }
-f_xy <- function(x,y){
+f_xy <- function(p){
+  x <- p[1]
+  y <- p[2]
   return(-4*x*y-2)
 }
-f_xx <- function(x,y){
+f_xx <- function(p){
+  x <- p[1]
+  y <- p[2]
   return(-2 -2*y^2)
 }
-f_yy <- function(x,y){
+f_yy <- function(p){
+  x <- p[1]
+  y <- p[2]
   return(-2*x^2)
 }
-get_hessian_mat <- function(x,y){
-  hess <- matrix(c(f_xx(x,y), f_xy(x,y), f_xy(x,y), f_yy(x,y)), ncol=2)
-  return(hess)
+get_gradient <- function(p){
+  return(c(f_x(p), f_y(p)))
 }
-
-#get_hessian_mat(0,0)
-
-f <- function(x,y){
-  return((-x^2)-(x^2*y^2)-(2*x*y)+(2*x)+2)
+get_hessian <- function(p){
+  hess <- matrix(c(f_xx(p), f_xy(p), f_xy(p), f_yy(p)), ncol=2)
+  return(hess)
 }
 
 x <- seq(-3,3,0.05)
@@ -53,42 +62,17 @@ points1 <- matrix(0,nrow=lx, ncol=ly)
 
 for (i in 1:lx){
   for (q in 1:ly){
-    points1[i,q] <- f(x[i], y[q])
+    points1[i,q] <- f(c(x[i], y[q]))
   }
 }
 
 contour(x,y,points1, nlevels=50)
 # unnecessary not so good looking 3d plot
-persp(x, y, points1, xlab="x", ylab="y", zlab="z", theta=-69, phi=40, zlim=c(3, 5))
-
-# b)
+persp(x, y, points1, xlab="x", ylab="y", zlab="z", theta=90, phi=20, zlim=c(0, 5))
 
 ```
 
-
-```{r}
-f <- function(x,y){
-  return(-x^2-x^2*y^2-2*x*y+2*x+2)
-}
-
-x <- seq(-10,10,0.1)
-y <- seq(-10,10,0.1)
-
-length(y)
-
-points1 <- matrix(0,nrow=length(x), ncol=length(x))
-
-for (i in 1:length(x)){
-  for (q in 1:length(x)){
-    points1[i,q] <- f(x[i], y[q])
-  }
-}
-
-
-contour(x,y,points1)
-points(-3,3,col="red")
-
-```
+### b)
 
 ```{r}
 newton <- function(x, epsilon){
@@ -104,6 +88,11 @@ newton <- function(x, epsilon){
   }
   return(x)
 }
+```
+
+### c)
+
+```{r}
 p1 <- c(2,0)
 p2 <- c(-1,-2)
 p3 <- c(0,1)
@@ -132,10 +121,6 @@ print("this is a maximum")
 
 ```
 
-
-### b)
-
-### c)
 
 ### d)
 
