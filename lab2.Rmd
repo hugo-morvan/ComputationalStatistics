@@ -88,6 +88,31 @@ points(-3,3,col="red")
 
 ```
 
+```{r}
+newton <- function(x, epsilon){
+  #x is you starting vector
+  dist <- 999
+  
+  while(dist > epsilon){
+    gp <- get_gradient(x)
+    gpp <- get_hessian(x)
+    x_next <- x - solve(gpp)%*%gp
+    dist <- sum((x-x_next)*(x-x_next))
+    x <- x_next
+  }
+  return(x)
+}
+p1 <- c(2,0)
+p2 <- c(-1,-2)
+p3 <- c(0,1)
+p4 <- c(10,-10)
+epsilon <- 1E-8
+newton(p1, epsilon)
+newton(p2, epsilon)
+newton(p3, epsilon)
+newton(p4, epsilon)
+
+```
 
 
 ### b)
