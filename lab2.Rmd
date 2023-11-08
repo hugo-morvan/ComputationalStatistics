@@ -3,6 +3,8 @@ title: "732A90 Lab 2"
 author: "Daniele Bozzi & Hugo Morvan"
 date: "`r Sys.Date()`"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -36,6 +38,29 @@ get_hessian_mat <- function(x,y){
 }
 
 #get_hessian_mat(0,0)
+
+f <- function(x,y){
+  return((-x^2)-(x^2*y^2)-(2*x*y)+(2*x)+2)
+}
+
+x <- seq(-3,3,0.05)
+y <- seq(-3,3,0.05)
+
+lx <- length(x)
+ly <- length(y)
+
+points1 <- matrix(0,nrow=lx, ncol=ly)
+
+for (i in 1:lx){
+  for (q in 1:ly){
+    points1[i,q] <- f(x[i], y[q])
+  }
+}
+
+contour(x,y,points1, nlevels=50)
+
+# b)
+
 ```
 
 
