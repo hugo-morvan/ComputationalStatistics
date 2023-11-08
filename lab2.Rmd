@@ -39,6 +39,32 @@ get_hessian_mat <- function(x,y){
 ```
 
 
+```{r}
+f <- function(x,y){
+  return(-x^2-x^2*y^2-2*x*y+2*x+2)
+}
+
+x <- seq(-10,10,0.1)
+y <- seq(-10,10,0.1)
+
+length(y)
+
+points1 <- matrix(0,nrow=length(x), ncol=length(x))
+
+for (i in 1:length(x)){
+  for (q in 1:length(x)){
+    points1[i,q] <- f(x[i], y[q])
+  }
+}
+
+
+contour(x,y,points1)
+points(-3,3,col="red")
+
+```
+
+
+
 ### b)
 
 ### c)
