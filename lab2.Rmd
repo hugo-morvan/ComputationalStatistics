@@ -58,6 +58,8 @@ for (i in 1:lx){
 }
 
 contour(x,y,points1, nlevels=50)
+# unnecessary not so good looking 3d plot
+persp(x, y, points1, xlab="x", ylab="y", zlab="z", theta=-69, phi=40, zlim=c(3, 5))
 
 # b)
 
