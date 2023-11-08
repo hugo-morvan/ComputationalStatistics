@@ -113,6 +113,22 @@ newton(p3, epsilon)
 newton(p4, epsilon)
 
 ```
+We obtain 2 points : (0,1) and (1,-1)
+
+```{r}
+print("Gradient and Hessian for the point (0,1)")
+get_gradient(c(0,1))
+get_hessian(c(0,1))
+print("this is a saddle point")
+#print("the matrix is negative semi-definite")
+
+print("Gradient and Hessian for the point (1,-1)")
+get_gradient(c(1,-1))
+get_hessian(c(1,-1))
+
+print("this is a maximum")
+
+```
 
 
 ### b)
