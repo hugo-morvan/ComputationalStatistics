@@ -139,44 +139,39 @@ Y <- c(0,0,1,0,1,1,1,0,1,1)
 
 g <- function(B){
   sum1 <- 0
-  for (q in length(X))
+  for (q in 1:10)
     sum1 <- sum1 + (Y[q]*log((1+exp(-B[1]-B[2]*X[q]))^-1)+(1-Y[q])*log(1-(1+exp(-B[1]-B[2]*X[q]))^-1))
   return(sum1)
 }
 
 grad <- function(B){
-  sum2 <- 0
-  for (i in length(X))
-    sum2 <- sum2 + (Y[i] -(1/(1+exp(-B[1]-B[2]*X[i]))) * c(1,X[i]))
+  sum2 <- c(0,0)
+  for (i in 1:10)
+    sum2 <- sum2 + ((Y[i] - (1/(1+exp(-B[1]-B[2]*X[i])))) * c(1,X[i]))
   return(sum2)
 }
 
-steepestasc <- function(x0, eps=1e-5, alpha0=1)
+steepestasc <- function(x0, eps=1e-8, alpha0=1)
 {
   countfun <- 0
   countgrad <- 0
   xt   <- x0
   conv <- 999
-  #points(xt[1], xt[2], col=2, pch=4, lwd=3)
-  while(conv>eps)
+  while(conv > eps)
   {
     alpha <- alpha0
     xt1   <- xt
     xt    <- xt1 + alpha*grad(xt1)
     countgrad <- countgrad + 1
-    cat(xt, xt1, "\n")
     while (g(xt) < g(xt1))
     {
-      cat(xt, xt1, "INSIDE\n")
       countfun <- countfun + 2
       alpha <- alpha/2
       xt    <- xt1 + alpha*grad(xt1)
       countgrad <- countgrad + 1
     }
-    #points(xt[1], xt[2], col=2, pch=4, lwd=1)
     conv <- sum((xt-xt1)*(xt-xt1))
   }
-  #points(xt[1], xt[2], col=4, pch=4, lwd=3)
   cat(xt, "\n")
   cat("Function calls:", countfun, "\nGradiant calls:", countgrad,"\n")
 }
@@ -196,13 +191,17 @@ steepestasc(c(-0.2, 1))
 
 ```{r}
 
-optim(c(-0.2, 1), g, gr = grad, method= "Nelder-Mead")
-xt <- c(-0.2,1)
+g2 <- function(B){
+  sum1 <- 0
+  for (q in 1:10)
+    sum1 <- sum1 + (Y[q]*log((1+exp(-B[1]-B[2]*X[q]))^-1)+(1-Y[q])*log(1-(1+exp(-B[1]-B[2]*X[q]))^-1))
+  return(-sum1)
+}
 
-xt1   <- xt
-xt    <- xt1 + 1*grad(xt1)
 
-g(xt) < g(xt1)
+optim(c(-0.2, 1), g2, method= "Nelder-Mead")
+
+optim(c(-0.2, 1), g2, method= "BFGS")
 
 ```
 
