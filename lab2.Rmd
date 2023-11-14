@@ -2,8 +2,11 @@
 title: "732A90 Lab 2"
 author: "Daniele Bozzoli & Hugo Morvan"
 date: "`r Sys.Date()`"
-output: pdf_document
-editor_options: 
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
   chunk_output_type: console
 ---
 ```{r setup, include=FALSE}
@@ -13,7 +16,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Question 1: Optimisation of a two-dimensional function
 
 ### a)
-```{r}
+
+Countour plot:
+
+```{r 1-a, echo=FALSE}
 f <- function(p){
   x <- p[1]
   y <- p[2]
@@ -67,16 +73,16 @@ for (i in 1:lx){
 }
 
 contour(x,y,points1, nlevels=50)
-# unnecessary not so good looking 3d plot
-persp(x, y, points1, xlab="x", ylab="y", zlab="z", theta=90, phi=20, zlim=c(0, 5))
+# unnecessary not so good looking 3d plot, but helps understanding how the function look
+# persp(x, y, points1, xlab="x", ylab="y", zlab="z", theta=90, phi=20, zlim=c(0, 5))
 
 ```
 
 ### b)
 
-```{r}
+```{r 1-b, echo=TRUE}
 newton <- function(x, epsilon){
-  #x is you starting vector
+  #x is the starting vector
   dist <- 999
   
   while(dist > epsilon){
@@ -90,24 +96,44 @@ newton <- function(x, epsilon){
 }
 ```
 
+
 ### c)
 
-```{r}
+```{r 1-c-1, echo=FALSE}
 p1 <- c(2,0)
 p2 <- c(-1,-2)
 p3 <- c(0,1)
 p4 <- c(10,-10)
 epsilon <- 1E-8
-newton(p1, epsilon)
-newton(p2, epsilon)
-newton(p3, epsilon)
-newton(p4, epsilon)
+#newton(p1, epsilon)
+#newton(p2, epsilon)
+#newton(p3, epsilon)
+#newton(p4, epsilon)
 
 ```
-We obtain 2 points : (0,1) and (1,-1)
+Starting point : (x, y) = (2, 0), Newton method output : (`r newton(p1, epsilon)`).
 
-```{r}
-print("Gradient and Hessian for the point (0,1)")
+Starting point : (x, y) = (-1, -2), Newton method output : (`r round(newton(p2, epsilon),4)`).
+
+Starting point : (x, y) = (0, 1), Newton method output : (`r round(newton(p3, epsilon),4)`).
+
+Starting point : (x, y) = (10, -10), Newton method output : (`r newton(p4, epsilon)`).
+
+We obtain 2 points : (0,1) and (1,-1).
+The Gradient for the point (0,1) is (`r get_gradient(c(0,1))`) and its Hessian matrix is: 
+```{r echo=FALSE}
+get_hessian(c(0,1))
+```
+The matrix is a negative semi-definite therefore this is a saddle point.
+
+The Gradient for the point (1,-1) is (`r get_gradient(c(1,-1))`) and its Hessian matrix is:
+```{r echo=FALSE}
+get_hessian(c(1,-1))
+```
+The matrix is a negative definite therefore this is a local maximum.
+
+```{r 1-c-2, eval=FALSE, include=FALSE}
+
 get_gradient(c(0,1))
 get_hessian(c(0,1))
 print("this is a saddle point")
@@ -123,16 +149,208 @@ print("this is a maximum")
 
 
 ### d)
-The disadvantage of using the steepest method instead of the Newton one is that it
-converges slower, but the advantage is that the computation of the Hessian matrix is 
-not needed, which can be difficult sometimes to calculate.
+The disadvantage of using the steepest method instead of the Newton one is that it converges slower, but the advantage is that the computation of the Hessian matrix is not needed, which can be difficult sometimes to calculate.
 
 
 ## Question 2:
 
 ### a)
 
+```{r 2-a, echo=TRUE}
+
+X <- c(0,0,0,0.1,0.1,0.3,0.3,0.9,0.9,0.9)
+Y <- c(0,0,1,0,1,1,1,0,1,1)
+
+g <- function(B){
+  sum1 <- 0
+  for (q in 1:10)
+    sum1 <- sum1 + (Y[q]*log((1+exp(-B[1]-B[2]*X[q]))^-1)+(1-Y[q])*log(1-(1+exp(-B[1]-B[2]*X[q]))^-1))
+  return(sum1)
+}
+
+grad <- function(B){
+  sum2 <- c(0,0)
+  for (i in 1:10)
+    sum2 <- sum2 + ((Y[i] - (1/(1+exp(-B[1]-B[2]*X[i])))) * c(1,X[i]))
+  return(sum2)
+}
+
+steepestasc <- function(x0, eps=1e-6, alpha0=1){
+  countfun <- 0
+  countgrad <- 0
+  xt   <- x0
+  conv <- 999
+  while(conv > eps){ 
+    alpha <- alpha0
+    xt1   <- xt
+    xt    <- xt1 + alpha*grad(xt1)
+    countgrad <- countgrad + 1
+    while (g(xt) < g(xt1)){
+      countfun <- countfun + 2
+      alpha <- alpha/2
+      xt    <- xt1 + alpha*grad(xt1)
+      countgrad <- countgrad + 1
+    }
+    conv <- sum((xt-xt1)*(xt-xt1)) # convergence criterion: distance between two successive iterates
+  }
+  cat(xt, "\n")
+  cat("Function calls:", countfun, "\nGradiant calls:", countgrad,"\n")
+}
+
+```
+
+### b)
+Using Alpha = 1, the optimal point is found at :
+```{r 2-b-1, echo=FALSE}
+steepestasc(c(-0.2, 1))
+```
+
+Using Alpha = 5, the optimal point is found at :
+```{r 2-b-2, echo=FALSE}
+steepestasc(c(-0.2, 1), alpha0=5)
+```
+We reach the same result, but with less function calls and gradient calls for a backtracking starting value of Alpha = 1.
+
+### c)
+optim function with Nelder-Mead method:
+```{r 2-c}
+g2 <- function(B){
+  sum1 <- 0
+  for (q in 1:10)
+    sum1 <- sum1 + (Y[q]*log((1+exp(-B[1]-B[2]*X[q]))^-1)+(1-Y[q])*log(1-(1+exp(-B[1]-B[2]*X[q]))^-1))
+  return(-sum1)
+}
+
+optim(c(-0.2, 1), g2, method= "Nelder-Mead")
+```
+
+optim function with BFGS method:
 ```{r}
+optim(c(-0.2, 1), g2, method= "BFGS")
+```
+
+The result is slightly different after 4 digits, but essentially the same point. Our function is more precise because we can choose the epsilon value for the stopping criterion.
+For reference, our function used 18 Function calls and 28 Gradiant calls (for alpha = 1 and epsilon = 10e-6).
+Nelder-Mead used 47 Function calls and 0 Gradiant calls (not needed in the Nelder-Mead algorithm). 
+BFGS used 12 Function calls and 8 Gradiant calls.
+
+### d)
+
+```{r 2-d}
+glm(Y~X,family = "binomial")
+```
+
+We get the same result as the glm function. Great!
+
+## Appendix:
+
+### 1-a)
+
+```{r A1-a, echo=TRUE}
+f <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-x^2 -x^2*y^2 -2*x*y +2*x +2)
+}
+f_x <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-2*x -2*x*y^2 -2*y +2)
+}
+f_y <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-2*x^2*y-2*x)
+}
+f_xy <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-4*x*y-2)
+}
+f_xx <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-2 -2*y^2)
+}
+f_yy <- function(p){
+  x <- p[1]
+  y <- p[2]
+  return(-2*x^2)
+}
+get_gradient <- function(p){
+  return(c(f_x(p), f_y(p)))
+}
+get_hessian <- function(p){
+  hess <- matrix(c(f_xx(p), f_xy(p), f_xy(p), f_yy(p)), ncol=2)
+  return(hess)
+}
+
+x <- seq(-3,3,0.05)
+y <- seq(-3,3,0.05)
+
+lx <- length(x)
+ly <- length(y)
+
+points1 <- matrix(0,nrow=lx, ncol=ly)
+
+for (i in 1:lx){
+  for (q in 1:ly){
+    points1[i,q] <- f(c(x[i], y[q]))
+  }
+}
+contour(x,y,points1, nlevels=50)
+```
+
+### 1-b)
+
+```{r A1-b, echo=TRUE}
+newton <- function(x, epsilon){
+  #x is you starting vector
+  dist <- 999
+  
+  while(dist > epsilon){
+    gp <- get_gradient(x)
+    gpp <- get_hessian(x)
+    x_next <- x - solve(gpp)%*%gp
+    dist <- sum((x-x_next)*(x-x_next))
+    x <- x_next
+  }
+  return(x)
+}
+```
+
+### 1-c)
+
+```{r A1-c-1, echo=TRUE}
+p1 <- c(2,0)
+p2 <- c(-1,-2)
+p3 <- c(0,1)
+p4 <- c(10,-10)
+epsilon <- 1E-8
+newton(p1, epsilon)
+newton(p2, epsilon)
+newton(p3, epsilon)
+newton(p4, epsilon)
+```
+
+```{r A1-c-2, echo=FALSE}
+print("Gradient and Hessian for the point (0,1)")
+get_gradient(c(0,1))
+get_hessian(c(0,1))
+print("this is a saddle point")
+#print("the matrix is negative semi-definite")
+
+print("Gradient and Hessian for the point (1,-1)")
+get_gradient(c(1,-1))
+get_hessian(c(1,-1))
+
+print("this is a maximum")
+
+```
+
+### 2-a)
+
+```{r A2-a, echo=TRUE}
 
 X <- c(0,0,0,0.1,0.1,0.3,0.3,0.9,0.9,0.9)
 Y <- c(0,0,1,0,1,1,1,0,1,1)
@@ -175,28 +393,27 @@ steepestasc <- function(x0, eps=1e-8, alpha0=1)
   cat(xt, "\n")
   cat("Function calls:", countfun, "\nGradiant calls:", countgrad,"\n")
 }
-
 ```
 
-See appendix 2-a for the code of the function steepestasc.
+### 2-b)
 
-### b)
 Using Alpha = 1 : 
-```{r}
+```{r A2-b-1, echo=TRUE}
 steepestasc(c(-0.2, 1))
 
 ```
 
 Using Alpha = 5 :
-```{r}
+```{r A2-b-2, echo=TRUE}
 steepestasc(c(-0.2, 1), alpha0=5)
 
 ```
 We reach the same result, but with less function calls and gradient calls.
 
-### c)
 
-```{r}
+### 2-c)
+
+```{r A2-c, echo=TRUE}
 g2 <- function(B){
   sum1 <- 0
   for (q in 1:10)
@@ -204,72 +421,12 @@ g2 <- function(B){
   return(-sum1)
 }
 
-
 optim(c(-0.2, 1), g2, method= "Nelder-Mead")
-
 optim(c(-0.2, 1), g2, method= "BFGS")
-
-```
-The result is slightly different after 4 digits, but esentialy the same point. Ou function is more precise, because we can choose the epsilon value for the stopping criterion.
-For reference, our function used Function calls: 26 and Gradiant calls: 43 
-Nelder-Mead used  Function calls: 48 and Gradiant calls: 0
-BFGS used Function calls: 12 and Gradiant calls: 0
-
-### d)
-
-```{r}
-glm(Y~X,family = "binomial")
-```
-
-We get the same result as the glm function
-
-## Appendix:
-
-### 1-a)
-
-```{r}
-
-
-```
-
-### 1-b)
-
-```{r}
-
-```
-
-### 1-c)
-
-```{r}
-
-```
-
-### 1-d)
-
-```{r}
-
-```
-
-### 2-a)
-
-```{r}
-
-```
-
-### 2-b)
-
-```{r}
-
-```
-
-### 2-c)
-
-```{r}
-
 ```
 
 ### 2-d)
 
-```{r}
-
+```{r A2-d, echo=TRUE}
+glm(Y~X,family = "binomial")
 ```
