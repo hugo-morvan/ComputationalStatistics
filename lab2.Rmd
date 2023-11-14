@@ -1,6 +1,6 @@
 ---
 title: "732A90 Lab 2"
-author: "Daniele Bozzi & Hugo Morvan"
+author: "Daniele Bozzoli & Hugo Morvan"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options: 
@@ -178,19 +178,25 @@ steepestasc <- function(x0, eps=1e-8, alpha0=1)
 
 ```
 
+See appendix 2-a for the code of the function steepestasc.
+
 ### b)
-
+Using Alpha = 1 : 
 ```{r}
-
 steepestasc(c(-0.2, 1))
 
 ```
 
+Using Alpha = 5 :
+```{r}
+steepestasc(c(-0.2, 1), alpha0=5)
+
+```
+We reach the same result, but with less function calls and gradient calls.
 
 ### c)
 
 ```{r}
-
 g2 <- function(B){
   sum1 <- 0
   for (q in 1:10)
@@ -204,6 +210,66 @@ optim(c(-0.2, 1), g2, method= "Nelder-Mead")
 optim(c(-0.2, 1), g2, method= "BFGS")
 
 ```
-
+The result is slightly different after 4 digits, but esentialy the same point. Ou function is more precise, because we can choose the epsilon value for the stopping criterion.
+For reference, our function used Function calls: 26 and Gradiant calls: 43 
+Nelder-Mead used  Function calls: 48 and Gradiant calls: 0
+BFGS used Function calls: 12 and Gradiant calls: 0
 
 ### d)
+
+```{r}
+glm(Y~X,family = "binomial")
+```
+
+We get the same result as the glm function
+
+## Appendix:
+
+### 1-a)
+
+```{r}
+
+
+```
+
+### 1-b)
+
+```{r}
+
+```
+
+### 1-c)
+
+```{r}
+
+```
+
+### 1-d)
+
+```{r}
+
+```
+
+### 2-a)
+
+```{r}
+
+```
+
+### 2-b)
+
+```{r}
+
+```
+
+### 2-c)
+
+```{r}
+
+```
+
+### 2-d)
+
+```{r}
+
+```
