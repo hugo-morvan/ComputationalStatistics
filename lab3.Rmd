@@ -29,7 +29,73 @@ x + 1     if − 1 ≤ x ≤ 0,
 Choose an appropriate and simple envelope e(x) for the density and program a random generator for X using rejection sampling.
 
 ```{r a}
+f <- function(x){
+  out <- c()
+  for (i in 1:length(x)){
+    if (x[i] < -1){
+      out <- append(out, 0)
+    }else if(x[i] > 1){
+      out <- append(out, 0)
+      
+    }else if (-1 <= x[i] && x[i] <= 0){
+      out <- append(out, x[i]+1)
+    } else if (0 < x[i] && x[i] <= 1){
+      out <- append(out, 1-x[i])
+    }
+    return(out)
+  }
+  
+}
+e <- function(x){
+  out <- c()
+  for (i in 1:length(x)){
+    if (x[i] < -1){
+      out <- append(out, 0)
+    }else if(x[i] > 1){
+      out <- append(out, 0)
+    }else{
+      out <- append(out, 2)
+    } 
+  }
+  return(out)
+}
+e2 <- function(x){
+  a <- 0.5
+  return(g(x)/a)
+}
+g <- function(x){
+  out <- c()
+  for(i in 1:length(x)){
+    out <- append(out, runif(1, -1, 1))
+  }
+  return(out)
+}
+rejection_sampling <- function(f, e, n){
+  accepted <- matrix(NA, ncol=2, nrow=n)
+  p <- 0
+  while(p < n){
+    y <- runif(1, -1, 1)
+    u <- runif(1, 0, 1)
+    if(u <= (f(y)/e(y))){
+      accepted[p,1] <- y
+      accepted[p,2] <- u
+      p <- p + 1
+    }
+  }
+  return(accepted)
+}
 
+```
+
+```{r}
+n <- 10000
+a <- rejection_sampling(f, e, n)
+x <- seq(from = -2, to = 2, by=0.01)
+y = sapply(x, FUN = f)
+plot(x, y, type = 'l', xlim = c(-2,2))
+lines(x, sapply(x, FUN = e2), xlim = c(-2,2), ylim = c(0,2))
+points(a)
+hist(a[,1], xlim = c(-2,2), nclass=30)
 ```
 
 ### b.
@@ -40,18 +106,16 @@ In Lecture 3, another triangle distribution was generated using the inverse cumu
 ```
 
 ### c.
-Sums or differences of two independent uniformly distributed variables can also have some triangle distribution. When U1 , U2 are two independent U nif [0, 1] random variables, U1 − U2 has the same distribution as X. Use this result to program a generator for X.
+Sums or differences of two independent uniformly distributed variables can also have some triangle distribution. When U1 , U2 are two independent Unif [0, 1] random variables, U1 − U2 has the same distribution as X. Use this result to program a generator for X.
 
-```{r}
+```{r c}
 
 ```
 
 ### d.
-Check your random generators in each of a. to c. by generating 10000 random variables and plotting
-a histogram. Which of the three methods do you prefer if you had to generate samples of X? Use
-the data from one method to determine the variance of X.
+Check your random generators in each of a. to c. by generating 10000 random variables and plotting a histogram. Which of the three methods do you prefer if you had to generate samples of X? Use the data from one method to determine the variance of X.
 
-```{r}
+```{r d}
 
 ```
 
