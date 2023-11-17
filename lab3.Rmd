@@ -1,0 +1,57 @@
+---
+title: "732A90 Lab 3"
+output:
+  pdf_document: default
+  html_document: default
+date: "`r Sys.Date()`"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Computational Statistics - Fall 23
+
+# Computer Lab 3
+
+### Hugo Morvan, Daniele Bozzoli
+
+## Question 1: Sampling algorithms for a triangle distribution
+
+f(x) = 
+0         if x < −1 or x > 1,
+x + 1     if − 1 ≤ x ≤ 0,
+1 − x     if 0 < x ≤ 1.
+
+### a.
+Choose an appropriate and simple envelope e(x) for the density and program a random generator for X using rejection sampling.
+
+```{r a}
+
+```
+
+### b.
+In Lecture 3, another triangle distribution was generated using the inverse cumulative distribution function method, see page 9-10 of the lecture notes. Let Y be a random variable following this distribution. A random variable −Y has a triangle distribution on the interval [−1, 0]. Program a random generator for X using composition sampling based on Y and −Y . You can use the code from the lecture to generate Y .
+
+```{r b}
+
+```
+
+### c.
+Sums or differences of two independent uniformly distributed variables can also have some triangle distribution. When U1 , U2 are two independent U nif [0, 1] random variables, U1 − U2 has the same distribution as X. Use this result to program a generator for X.
+
+```{r}
+
+```
+
+### d.
+Check your random generators in each of a. to c. by generating 10000 random variables and plotting
+a histogram. Which of the three methods do you prefer if you had to generate samples of X? Use
+the data from one method to determine the variance of X.
+
+```{r}
+
+```
+
