@@ -176,6 +176,15 @@ Sums or differences of two independent uniformly distributed variables can also 
 
 ```{r c}
 
+genXunif <- function(){
+  u1 <- runif(10000)
+  u2 <- runif(10000)
+  return(u1-u2)
+}
+
+pp <- genXunif()
+hist(pp)
+
 ```
 
 ### d.
