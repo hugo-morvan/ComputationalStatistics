@@ -20,7 +20,7 @@ $$ sign(x) = \left\{\begin{array}{rcl}
                                 \\-1 & \mbox{for} & x<0
               \end{array}\right.$$
 The inverse of the cumulative distribution function is given by:
-$$ F^{-1}(x) = \mu - \frac{1}\lambda sign(x-0.5)ln(1-2|x-0.5|)$$
+$$ F^{-1}(y) = \mu - \frac{1}\lambda sign(y-0.5)ln(1-2|y-0.5|)$$
 (Source : https://en.wikipedia.org/wiki/Laplace_distribution)
 
 This function can be used to generate random numbers from the Laplace distribution. The following code generates 10000 random numbers from the Laplace distribution and plots the histogram:
