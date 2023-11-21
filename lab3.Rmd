@@ -119,3 +119,9 @@ Check your random generators in each of a. to c. by generating 10000 random vari
 
 ```
 
+## Question 2: Laplace distribution
+
+### a)
+
+### b)
+
