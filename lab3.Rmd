@@ -1,8 +1,8 @@
 ---
 title: "732A90 Lab 3"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 date: "`r Sys.Date()`"
 editor_options:
   chunk_output_type: inline
@@ -20,15 +20,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Question 1: Sampling algorithms for a triangle distribution
 
-f(x) = 
-0         if x < −1 or x > 1,
-x + 1     if − 1 ≤ x ≤ 0,
-1 − x     if 0 < x ≤ 1.
+\[ f(x) = \left\{
+  \begin{array}{ll}
+    0 & \text{if } x < -1 \text{ or } x > 1, \\
+    x + 1 & \text{if } -1 \leq x \leq 0, \\
+    1 - x & \text{if } 0 < x \leq 1.
+  \end{array}
+\right. \]
 
 ### a.
 Choose an appropriate and simple envelope e(x) for the density: 
 
 ```{r a}
+set.seed(12345)
 
 f <- function(x){
   out <- c()
@@ -41,7 +45,7 @@ f <- function(x){
   return(out)
 }
 
-#Determining proper value of a for the enveloppe
+#Determining proper value of a for the envelope
 x <- seq(-2, 2, 0.01)
 plot(x, f(x), col = "red", type = "l", ylim = c(0, 1.5))
 lines(x, dnorm(x)/0.5, col = "blue")
@@ -61,7 +65,7 @@ e <- function(x){
 ```
 We chose a simple normal distribution for the envelope. From this plot it can be seen that a value of a = 0.4 is not quite right therefore a = 0.35 is a good choice for the envelope.
 
-program a random generator for X using rejection sampling:
+Program a random generator for X using rejection sampling:
 ```{r}
 #Rejection sampling:
 Xa <- c()
@@ -79,7 +83,7 @@ hist(Xa)
 ```
 
 ### b.
-In Lecture 3, another triangle distribution was generated using the inverse cumulative distribution function method, see page 9-10 of the lecture notes. Let Y be a random variable following this distribution. A random variable −Y has a triangle distribution on the interval [−1, 0]. Program a random generator for X using composition sampling based on Y and −Y . You can use the code from the lecture to generate Y .
+In Lecture 3, another triangle distribution was generated using the inverse cumulative distribution function method, see page 9-10 of the lecture notes. Let Y be a random variable following this distribution. A random variable -Y has a triangle distribution on the interval [-1, 0]. Program a random generator for X using composition sampling based on Y and -Y . You can use the code from the lecture to generate Y .
 
 ```{r b}
 x <- seq(-2,2, 0.01)
@@ -152,7 +156,7 @@ hist(b)
 ```
 
 ### c.
-Sums or differences of two independent uniformly distributed variables can also have some triangle distribution. When U1 , U2 are two independent Unif [0, 1] random variables, U1 − U2 has the same distribution as X. Use this result to program a generator for X.
+Sums or differences of two independent uniformly distributed variables can also have some triangle distribution. When U1 , U2 are two independent Unif [0, 1] random variables, U1 \- U2 has the same distribution as X. Use this result to program a generator for X.
 
 ```{r c}
 
@@ -203,7 +207,7 @@ $$ sign(x) = \left\{\begin{array}{rcl}
               \end{array}\right.$$
 The inverse of the cumulative distribution function is given by:
 $$ F^{-1}(y) = \mu - \frac{1}\lambda sign(y-0.5)ln(1-2|y-0.5|)$$
-(Source : https://en.wikipedia.org/wiki/Laplace_distribution)
+( Source : https://en.wikipedia.org/wiki/Laplace_distribution )
 
 This function can be used to generate random numbers from the Laplace distribution. The following code generates 10000 random numbers from the Laplace distribution and plots the histogram:
 
@@ -227,7 +231,7 @@ curve(de(x, 0, 1)*2000, add = TRUE, col = "red")
 ```
 
 ### b)
-Use rejection sampling with DE(0, 1) as envelope to generate N(0, 1) variables. Explain step by step how this was done. How did you choose constant a in this method? Generate 2000 random numbers N (0, 1) using your code and plot the histogram. Compute the average rejection rate R in the rejection sampling procedure. What is the expected rejection rate ER and how close is it to R? 
+Use rejection sampling with DE (0, 1) as envelope to generate N (0, 1) variables. Explain step by step how this was done. How did you choose constant a in this method? Generate 2000 random numbers N (0, 1) using your code and plot the histogram. Compute the average rejection rate R in the rejection sampling procedure. What is the expected rejection rate ER and how close is it to R? 
 
 The rejection sampling method is based on the following theorem:
 Let $f$ be a probability density function and $g$ be a probability density function such that $f(x) \leqslant ag(x)$ for all $x$ and some constant $a$. Then the following algorithm generates a random variable $X$ with density $f$:
@@ -239,7 +243,7 @@ In this case, $f$ is the standard normal distribution and $g$ is the Laplace dis
 
 ```{r}
 #Rejection sampling method
-#Determining proper value of a for the enveloppe
+#Determining proper value of a for the envelope
 a <- 0.7
 #plot(x, f(x), col = "red", type = "l")
 #lines(x, g(x, 0, 1)/a, col = "blue")
