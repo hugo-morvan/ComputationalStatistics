@@ -174,7 +174,7 @@ Check your random generators in each of a. to c. by generating 10000 random vari
 
 #Comparaison of the histograms
 par(mfrow=c(1,3))
-hist(a, main="Rejection sampling", xlab="x", xlim=c(-2,2))
+hist(Xa, main="Rejection sampling", xlab="x", xlim=c(-2,2))
 hist(b, main="Composition sampling", xlab="x", xlim=c(-2,2))
 hist(c, main="Sum of uniform", xlab="x", xlim=c(-2,2))
 
