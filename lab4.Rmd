@@ -1,0 +1,123 @@
+---
+title: "lab4"
+author: "Hugo Morvan, Daniele Bozzoli"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Computational Statistics - Fall 23
+
+# Computer Lab 4
+
+## Hugo Morvan, Daniele Bozzoli
+
+## Question 1: Computations with Metropolis-Hastings
+
+Consider a random variabel X with the following probability density function:
+f (x) ∝ x5 e−x , x > 0.
+The distribution is known up to some constant of proportionality. If you are interested (NOT part of the Lab) this constant can be found by applying integration by parts multiple times and equals 120.
+
+### a.
+Use the Metropolis–Hastings algorithm to generate 10000 samples from this distribution by using a log–normal LN (Xt , 1) proposal distribution; take some starting point. Plot the chain you obtained with iterations on the horizontal axis. What can you guess about the convergence of the chain? If there is a burn–in period, what can be the size of this period? What is the acceptance rate? Plot
+a histogram of the sample.
+```{r 1a}
+
+```
+
+### b.
+Perform Part a by using the chi–square distribution X²(⌊Xt + 1⌋) as a proposal distribution, where ⌊x⌋ is the floor function, meaning the integer part of x for positive x, i.e. ⌊2.95⌋ = 2
+
+```{r 1b}
+
+
+```
+
+### c.
+
+Suggest another proposal distribution (can be a log normal or chi–square distribution with other parameters or another distribution) with the potential to generate a good sample. Perform part a with this distribution.
+
+```{r 1c}
+
+```
+
+### d.
+
+Compare the results of Parts a, b, and c and make conclusions.
+
+```{r 1d}
+
+
+
+```
+
+### e.
+
+Estimate $$ E(X) = \int_0^\infty{xf(x)dx}$$
+
+using the samples from Parts a, b, and c.
+
+```{r 1e}
+
+
+
+```
+
+### f.
+
+The distribution generated is in fact a gamma distribution. Look in the literature and define the actual value of the integral. Compare it with the one you obtained.
+
+```{r 1f}
+
+
+
+```
+
+## Question 2: Gibbs sampling
+
+Let X = (X1 , X2 ) be a bivariate distribution with density f (x1 , x2 ) ∝ 1{x21 + wx1 x2 + x22 < 1} for some specific w with |w| < 2. X has a uniform distribution on some two-dimensional region. We consider here the case w = 1.999 (in Lecture 4, the case w = 1.8 was shown).
+
+### a.
+
+Draw the boundaries of the region where X has a uniform distribution. You can use the code provided on the course homepage and adjust it.
+
+```{r 2a}
+
+
+```
+
+### b.
+
+What is the conditional distribution of X1 given X2 and that of X2 given X1 ?
+
+```{r 2b}
+
+```
+
+### c.
+
+Write your own code for Gibbs sampling the distribution. Run it to generate n = 1000 random vectors and plot them into the picture from Part a. Determine P (X1 > 0) based on the sample and repeat this a few times (you need not to plot the repetitions). What should be the true result for this probability?
+
+```{r 2c}
+
+```
+
+
+### d. 
+Discuss, why the Gibbs sampling for this situation seems to be less successful for w = 1.999 compared to the case w = 1.8 from the lecture.
+
+```{r 2d}
+
+```
+
+
+### e. 
+We might transform the variable X and generate U = (U1 , U2 ) = (X1 − X2 , X1 + X2 ) instead. In this case, the density of the transformed variable U = (U1 , U2 ) is again a uniform distribution on a transformed region (no proof necessary for this claim). Determine the boundaries of the transformed region where U has a uniform distribution on. You can use that the transformation corresponds to X1 = (U2 + U1 )/2 and X2 = (U2 − U1 )/2 and set this into the boundaries in terms of Xi . Plot the boundaries for (U1 , U2 ). Generate n = 1000 random vectors with Gibbs sampling for U and plot them. Determine P (X1 > 0) = P ((U2 + U1 )/2 > 0). Compare the results with Part c.
+
+```{r 2e}
+
+```
+
