@@ -1,5 +1,5 @@
 ---
-title: "lab4"
+title: "Computational Statistics Lab 4"
 author: "Hugo Morvan, Daniele Bozzoli"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -8,12 +8,6 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# Computational Statistics - Fall 23
-
-# Computer Lab 4
-
-## Hugo Morvan, Daniele Bozzoli
 
 ## Question 1: Computations with Metropolis-Hastings
 
@@ -25,7 +19,7 @@ The distribution is known up to some constant of proportionality. If you are int
 Use the Metropolis–Hastings algorithm to generate 10000 samples from this distribution by using a log–normal LN (Xt , 1) proposal distribution; take some starting point. Plot the chain you obtained with iterations on the horizontal axis. What can you guess about the convergence of the chain? If there is a burn–in period, what can be the size of this period? What is the acceptance rate? Plot
 a histogram of the sample.
 
-```{r 1a}
+```{r 1a, echo=FALSE}
 ### a)
 
 f <- function(x){
@@ -74,7 +68,8 @@ We observe from this plot that this method doesn't really converge and the major
 ### b.
 Perform Part a by using the chi–square distribution  as a proposal distribution, where is the floor function, meaning the integer part of x for positive x
 
-```{r 1b}
+```{r 1b, echo=FALSE}
+#---------------------------------------------
 ### b)
 
 starting_point2 <- 1
@@ -113,7 +108,8 @@ plot(chain2, type="l")
 
 Suggest another proposal distribution (can be a log normal or chi–square distribution with other parameters or another distribution) with the potential to generate a good sample. Perform part a with this distribution.
 
-```{r 1c}
+```{r 1c, echo=FALSE}
+#---------------------------------------------
 ### c)
 
 starting_point3 <- 3
@@ -159,7 +155,8 @@ values (< 4). The other two seem to generate fair results, compared to the distr
 for method b) and c) as method a) does not get any better even with this 
 burn-in period).
 
-```{r 1d}
+```{r 1d, echo=FALSE}
+#---------------------------------------------
 ### d)
 
 par(mfrow=c(3,1))
@@ -186,7 +183,8 @@ Estimate $$ E(X) = \int_0^\infty{xf(x)dx}$$
 
 using the samples from Parts a, b, and c.
 
-```{r 1e}
+```{r 1e, echo=FALSE}
+#---------------------------------------------
 ### e)
 
 cat("the expected value of the first method is:", mean(chain[-c(1:30)]), "\n")
@@ -218,6 +216,7 @@ Draw the boundaries of the region where X has a uniform distribution.
 You can use the code provided on the course homepage and adjust it.
 
 ```{r 2a, echo=FALSE}
+#==============================================================================
 # 2.a
 ###############################
 ### Boundary ellipse 
@@ -402,7 +401,7 @@ for(i in 1:100){
 points(U2, U1, col = "red", pch = 20, cex = 0.5)
 ```
 The mean of the 100 simulations is `r mean(means)`. 
-From the plot, we can see that the simulation is more successful than the one in part c. because it is less dependent on the starting values of U1 and U2.
+From the plot, we can see that the simulation is more successful than the one in part c. because it is less dependent on the starting values of U1 and U2 and the vector of U1 and U2 covers the whole region.
 
 
 # Appendix
