@@ -217,8 +217,8 @@ region. We consider here the case w = 1.999 (in Lecture 4, the case w =
 Draw the boundaries of the region where X has a uniform distribution.
 You can use the code provided on the course homepage and adjust it.
 
-```{r 2a}
-
+```{r 2a, echo=FALSE}
+# 2.a
 ###############################
 ### Boundary ellipse 
 ### for Gibbs sampling example
@@ -231,6 +231,7 @@ plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1)
 # ellipse
 lines(xv, -(w/2)*xv-sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
 lines(xv, -(w/2)*xv+sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
+
 ```
 
 ### b.
@@ -252,7 +253,8 @@ Write your own code for Gibbs sampling the distribution. Run it to
 generate n = 1000 random vectors and plot them into the picture from
 Part a.
 
-```{r 2c}
+```{r 2c, echo=FALSE}
+# 2.c
 #Gibbs sampling
 f1_cond <- function(x2){
   return(runif(1, min = -0.9995*x2 - sqrt(1-0.00099975*x2), max = -0.9995*x2 + sqrt(1-0.00099975*x2)))
@@ -294,7 +296,7 @@ same code, we can repeat the experiment a few times and it seems that
 the result is always close to 0.5, but this is very dependent on the
 starting values of X1 and X2.
 
-```{r 2c2}
+```{r 2c2, echo=FALSE}
 #Determine P(X1 > 0)
 
 means <- c()
@@ -314,6 +316,7 @@ for(i in 1:100){
   means <- c(means, mean(X1 > 0))
 }
 #mean(means)
+
 ```
 
 After running the code 100 times, we get a mean of `r mean(means)`.
@@ -362,7 +365,9 @@ distribution for $u_1$ given $u_2$ is a uniform distribution on the
 interval ( $-\sqrt{1-u_2^2(0.5+0.25*w)\over{0.5-0.25*w}}$
 ,$\sqrt{1-u_2^2(0.5+0.25*w)\over{0.5-0.25*w}}$) and
 
-```{r 2e}
+```{r 2e, echo=FALSE}
+#2.e
+
 #Gibbs sampling
 xv <- seq(-sqrt(4000), sqrt(4000) , by=0.01)   # a range of x1-values, where the term below the root is non-negative (compare Lecture 4)
 plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1, ylim = c(-3,3))
@@ -393,6 +398,13 @@ for(i in 1:100){
   }
   means <- c(means, mean(U1 > 0))
 }
-mean(means)
-points(X2, X1, col = "red", pch = 20, cex = 0.5)
+#mean(means)
+points(U2, U1, col = "red", pch = 20, cex = 0.5)
+```
+The mean of the 100 simulations is `r mean(means)`. 
+From the plot, we can see that the simulation is more successful than the one in part c. because it is less dependent on the starting values of U1 and U2.
+
+
+# Appendix
+```{r appendix, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
 ```

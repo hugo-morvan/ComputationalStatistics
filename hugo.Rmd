@@ -312,34 +312,34 @@ interval ( $-\sqrt{1-u_2^2(0.5+0.25*w)\over{0.5-0.25*w}}$
 ```{r 2e}
 #Gibbs sampling
 xv <- seq(-sqrt(4000), sqrt(4000) , by=0.01)   # a range of x1-values, where the term below the root is non-negative (compare Lecture 4)
-plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1, ylim = c(-5,5))
+plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1, ylim = c(-3,3))
 # ellipse
 lines(xv, -sqrt(1-xv^2*0.00025)/(0.99975), lwd=2, col=8)
 lines(xv, sqrt(1-xv^2*0.00025)/(0.99975), lwd=2, col=8)
 
 u1_given_ <- function(u2){
-  return(runif(1, min = -sqrt(1-u2^2*0.00025)/(0.99975), max = sqrt(1-u2^2*0.00025)/(0.99975)))
+  return(runif( 1, min = -sqrt((1-u2^2*0.00025)/0.99975), max = sqrt((1-u2^2*0.00025)/0.99975) ))
 }
 u2_given_ <- function(u1){
-  return(runif(1, min = -sqrt(1-u1^2*0.99975)/(0.00025), max = sqrt(1-u1^2*0.99975)/(0.00025)))
+  return(runif(1, min = -sqrt((1-u1^2*0.99975)/0.00025), max = sqrt((1-u1^2*0.99975)/0.00025) ))
 }
 
 means <- c()
 for(i in 1:100){
+  set.seed(i)
   n <- 1000
   u1 <- 0
   u2 <- 0
   U1 <- c()
   U2 <- c()
   for(i in 1:n){
-    cat(u1, "\r")
     u1 <- u1_given_(u2)
     u2 <- u2_given_(u1)
     U1 <- c(U1, u1)
     U2 <- c(U2, u2)
   }
-  means <- c(means, mean(U1))
+  means <- c(means, mean(U1 > 0))
 }
 mean(means)
-
+points(X2, X1, col = "red", pch = 20, cex = 0.5)
 ```
