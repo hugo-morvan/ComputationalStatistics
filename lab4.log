@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.27)  28 NOV 2023 14:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.27)  28 NOV 2023 14:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -425,70 +425,82 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 [1
 
 {/home/h/.TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 199.
+<lab4_files/figure-latex/2a-1.pdf, id=94, 469.755pt x 325.215pt>
+File: lab4_files/figure-latex/2a-1.pdf Graphic file (type pdf)
+<use lab4_files/figure-latex/2a-1.pdf>
+Package pdftex.def Info: lab4_files/figure-latex/2a-1.pdf  used on input line 198.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[2{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc} <./lab4_files/figure-latex/2a-1.pdf>]
+Overfull \hbox (61.66798pt too wide) in paragraph at lines 206--209
+[]\T1/lmr/m/n/10 The con-di-tional dis-tri-bu-tion $\OML/lmm/m/it/10 f\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 x[]\OMS/lmsy/m/n/10 j\OML/lmm/m/it/10 x[]\OT1/lmr/m/n/10 )$ \T1/lmr/m/n/10 is a uni-form dis-tri-bu-tion on the in-ter-val $\OT1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OMS/lmsy/m/n/10 ^^@ []\OML/lmm/m/it/10 ; \OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 +
+ []
+
+
+Overfull \hbox (61.66798pt too wide) in paragraph at lines 210--213
+[]\T1/lmr/m/n/10 The con-di-tional dis-tri-bu-tion $\OML/lmm/m/it/10 f\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 x[]\OMS/lmsy/m/n/10 j\OML/lmm/m/it/10 x[]\OT1/lmr/m/n/10 )$ \T1/lmr/m/n/10 is a uni-form dis-tri-bu-tion on the in-ter-val $\OT1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OMS/lmsy/m/n/10 ^^@ []\OML/lmm/m/it/10 ; \OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 +
+ []
+
+<lab4_files/figure-latex/2c-1.pdf, id=111, 469.755pt x 325.215pt>
+File: lab4_files/figure-latex/2c-1.pdf Graphic file (type pdf)
+<use lab4_files/figure-latex/2c-1.pdf>
+Package pdftex.def Info: lab4_files/figure-latex/2c-1.pdf  used on input line 221.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[3 <./lab4_files/figure-latex/2c-1.pdf>]
+
+Package amsmath Warning: Foreign command \over;
+(amsmath)                \frac or \genfrac should be used instead
+(amsmath)                 on input line 274.
+
+<lab4_files/figure-latex/2e-1.pdf, id=123, 469.755pt x 325.215pt>
+File: lab4_files/figure-latex/2e-1.pdf Graphic file (type pdf)
+<use lab4_files/figure-latex/2e-1.pdf>
+Package pdftex.def Info: lab4_files/figure-latex/2e-1.pdf  used on input line 280.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 280--284
+[][]
+ []
+
+[4 <./lab4_files/figure-latex/2e-1.pdf>]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 289.
 (/home/h/.TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 200.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 290.
 
 LaTeX Font Warning: Font shape `T1/lmtt/bx/it' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 200.
-
-<lab4_files/figure-latex/2a-1.pdf, id=90, 469.755pt x 325.215pt>
-File: lab4_files/figure-latex/2a-1.pdf Graphic file (type pdf)
-<use lab4_files/figure-latex/2a-1.pdf>
-Package pdftex.def Info: lab4_files/figure-latex/2a-1.pdf  used on input line 215.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[2{/home/h/.TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
-Overfull \hbox (61.66798pt too wide) in paragraph at lines 223--226
-[]\T1/lmr/m/n/10 The con-di-tional dis-tri-bu-tion $\OML/lmm/m/it/10 f\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 x[]\OMS/lmsy/m/n/10 j\OML/lmm/m/it/10 x[]\OT1/lmr/m/n/10 )$ \T1/lmr/m/n/10 is a uni-form dis-tri-bu-tion on the in-ter-val $\OT1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OMS/lmsy/m/n/10 ^^@ []\OML/lmm/m/it/10 ; \OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 +
- []
-
-
-Overfull \hbox (61.66798pt too wide) in paragraph at lines 227--230
-[]\T1/lmr/m/n/10 The con-di-tional dis-tri-bu-tion $\OML/lmm/m/it/10 f\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 x[]\OMS/lmsy/m/n/10 j\OML/lmm/m/it/10 x[]\OT1/lmr/m/n/10 )$ \T1/lmr/m/n/10 is a uni-form dis-tri-bu-tion on the in-ter-val $\OT1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OMS/lmsy/m/n/10 ^^@ []\OML/lmm/m/it/10 ; \OMS/lmsy/m/n/10 ^^@\OT1/lmr/m/n/10 0\OML/lmm/m/it/10 :\OT1/lmr/m/n/10 9995\OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 +
- []
-
-[3 <./lab4_files/figure-latex/2a-1.pdf>]
-<lab4_files/figure-latex/2c-1.pdf, id=116, 469.755pt x 325.215pt>
-File: lab4_files/figure-latex/2c-1.pdf Graphic file (type pdf)
-<use lab4_files/figure-latex/2c-1.pdf>
-Package pdftex.def Info: lab4_files/figure-latex/2c-1.pdf  used on input line 272.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[4 <./lab4_files/figure-latex/2c-1.pdf>]
-
-Package amsmath Warning: Foreign command \over;
-(amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 349.
+(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 305.
 
 [5]
-<lab4_files/figure-latex/2e-1.pdf, id=134, 469.755pt x 325.215pt>
-File: lab4_files/figure-latex/2e-1.pdf Graphic file (type pdf)
-<use lab4_files/figure-latex/2e-1.pdf>
-Package pdftex.def Info: lab4_files/figure-latex/2e-1.pdf  used on input line 401.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[6] [7 <./lab4_files/figure-latex/2e-1.pdf>] (./lab4.aux)
+Underfull \vbox (badness 10000) detected at line 399
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 399
+ []
+
+[6] [7] (./lab4.aux)
  ***********
 LaTeX2e <2023-11-01>
 L3 programming layer <2023-11-09>
  ***********
 Package rerunfilecheck Info: File `lab4.out' has not changed.
-(rerunfilecheck)             Checksum: 9ADC930F6827A791C7B1DD101E8A9036;1776.
+(rerunfilecheck)             Checksum: 6D84E1BC21B2EB108E522BB68F757143;1862.
  ) 
 Here is how much of TeX's memory you used:
- 11297 strings out of 476227
- 171496 string characters out of 5796984
- 1935555 words of memory out of 5000000
+ 11299 strings out of 476227
+ 171478 string characters out of 5796984
+ 1940555 words of memory out of 5000000
  33036 multiletter control sequences out of 15000+600000
  605393 words of font info for 79 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  75i,6n,79p,623b,477s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmr5.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmtko10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></home/h/.TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on lab4.pdf (7 pages, 518609 bytes).
+Output written on lab4.pdf (7 pages, 520825 bytes).
 PDF statistics:
- 236 PDF objects out of 1000 (max. 8388607)
- 186 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
- 144 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 241 PDF objects out of 1000 (max. 8388607)
+ 191 compressed objects within 2 object streams
+ 42 named destinations out of 1000 (max. 500000)
+ 152 words of extra memory for PDF output out of 10000 (max. 10000000)
 
