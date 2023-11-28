@@ -1,5 +1,7 @@
 ################### lab 4 
 
+########## Ex. 1
+
 ### a)
 
 f <- function(x){
@@ -7,8 +9,8 @@ f <- function(x){
   return(x^5*exp(-x))
 }
 
-x <- seq(0.01,15,0.01)
-plot(x, f(x), type="l", lwd=3)
+X <- seq(0.01,15,0.01)
+plot(X, f(X), type="l", lwd=3) # f(x) distribution
 
 starting_point <- 3
 N <- 1E4
@@ -39,9 +41,15 @@ for (i in 1:N){
 
 chain 
 accept
+cat("acceptance rate =", accept / N)
 
 hist(chain)
-plot(chain, type="l")
+plot(chain, type="l")  
+
+# We observe from this plot that this method doesn't really converge and
+# the majority of iterations are rejected (acceptance rate = 0.0309).
+# Furthermore, a burn-in period is hard to detect / does not even look 
+# useful in this scenario, as this method is not really giving us good results.
 
 ### b)
 
@@ -74,21 +82,22 @@ for (i in 1:N){
 
 chain2
 accept2
+cat("acceptance rate =", accept2 / N)
 
 hist(chain2)
-plot(chain2, type="l")
+plot(chain2[1:100], type="l")
 
-## c)
+### c)
 
-starting_point3 <- 1
+starting_point3 <- 3
 N <- 1E4
 set.seed(12345)
 
 proposal_dist3 <- function(Xt){
-  return(rchisq(1, floor(Xt+5)))
+  return(rexp(1, Xt^-1))
 }
 
-chain3 <- starting_point2
+chain3 <- starting_point3
 accept3 <- 0
 
 for (i in 1:N){
@@ -98,8 +107,8 @@ for (i in 1:N){
   x_star <- proposal_dist3(x)
   
   # MH ratio
-  R     <- (f(x_star) * dchisq(x, floor(x_star + 5))) / 
-    (f(x) * dchisq(x_star, floor(x + 5)))
+  R     <- (f(x_star) * dexp(x, x_star^-1)) / 
+    (f(x) * dexp(x_star, x^-1))
   ap    <- runif(1)
   if (ap < R){
     chain3 <- c(chain3, x_star)
@@ -107,25 +116,50 @@ for (i in 1:N){
   } else chain3 <- c(chain3, x) 
 }
 
-plot(chain3, type="l")
+mean(chain3)
+cat("acceptance rate =", accept3 / N)
+
 hist(chain3)
+plot(chain3, type="l")
 
 ## d)
 
+# Looking at the histograms, it is clear how the second and 
+# third methods generate more reasonable results, both with 
+# better acceptance rates than the first method. The first method seems to 
+# generate too many samples with low values (< 4). The other two seem to generate
+# fair results, compared to the distribution of f(x). They produce very similar
+# results with slightly different acceptance rates, the Chi Squared distribution
+# seems to be the best proposal distribution to choose for our case. A burn-in 
+# period of 30 was chosen (mainly for method b) and c) as method a) does not
+# get any better even with this burn-in period).
+
 par(mfrow=c(3,1))
-plot(chain, type="l")
-plot(chain2, type="l")
-plot(chain3, type="l")
+plot(chain[-c(1:30)], type="l")
+plot(chain2[-c(1:30)], type="l")
+plot(chain3[-c(1:30)], type="l")
+
+cat("Method a) acceptance rate =", accept / N, "\n")
+cat("Method b) acceptance rate =", accept2 / N, "\n")
+cat("Method c) acceptance rate =", accept3 / N, "\n")
+
+par(mfrow=c(3,1))
+hist(chain[-c(1:30)], main = "Histogram of part a)", xlab = "x values")
+hist(chain2[-c(1:30)], main = "Histogram of part b)", xlab = "x values")
+hist(chain3[-c(1:30)], main = "Histogram of part c)", xlab = "x values")
+
+par(mfrow=c(1,1))
+plot(X, f(X), type="l", lwd=3)
 
 # e)
 
-mean(chain)
-mean(chain2)
-mean(chain3)
+cat("the expected value of the first method is:", mean(chain[-c(1:30)]), "\n")
+cat("the expected value of the second method is:", mean(chain2[-c(1:30)]), "\n")
+cat("the expected value of the third method is:", mean(chain3[-c(1:30)]), "\n")
 
 # f)
 
-# the distribution f(x) is a Gamma distribution with parameters
+# The distribution f(x) is a Gamma distribution with parameters
 # alpha=6 and beta=1, hence E(x) = alpha/beta = 6.
-# the results we obtained are pretty accurate with b) and c) methods,
+# The results we obtained are pretty accurate with b) and c) methods,
 # but not accurate at all using the first method a).
