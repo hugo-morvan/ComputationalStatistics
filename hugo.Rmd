@@ -1,31 +1,41 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
 
 ## Question 2: Laplace distribution
-The double exponential (Laplace) distribution is given by formula:
-$$ DE(\mu, \lambda) = \frac{\lambda}{2}exp({-\lambda|x-\mu|}) $$
-### a)
-Write a code generating double exponential distribution DE(0, 1) from Unif(0,1) by using the inverse CDF method. Explain how you obtained that code step by step. Generate 10000 random numbers from this distribution, plot the histogram and comment whether the result looks reasonable.
 
-The cumulative distribution function of the Laplace distribution is given by:
-$$ F(x)= \int_{-\infty}^t f(t)dt =\left\{ \begin{array}{rcl}
+The double exponential (Laplace) distribution is given by formula:
+$$ DE(\mu, \lambda) = \frac{\lambda}{2}exp({-\lambda|x-\mu|}) $$ \### a)
+Write a code generating double exponential distribution DE(0, 1) from
+Unif(0,1) by using the inverse CDF method. Explain how you obtained that
+code step by step. Generate 10000 random numbers from this distribution,
+plot the histogram and comment whether the result looks reasonable.
+
+The cumulative distribution function of the Laplace distribution is
+given by: $$ F(x)= \int_{-\infty}^t f(t)dt =\left\{ \begin{array}{rcl}
                                 \frac{1}2 exp(\lambda(x-\mu) )& \mbox{for} & x<\mu 
                                 \\1 - \frac{1}2 exp(-\lambda(x-\mu)) & \mbox{for} & x \geqslant \mu
                                   \end{array}\right.$$
 
-Which can be simplified to the following: 
-$$ \frac{1}2 + \frac{1}2 sign(x-\mu)(1 - exp(-\lambda|x-\mu|)$$
-where sign(x) is the sign function, which is defined as:
+Which can be simplified to the following:
+$$ \frac{1}2 + \frac{1}2 sign(x-\mu)(1 - exp(-\lambda|x-\mu|)$$ where
+sign(x) is the sign function, which is defined as:
 $$ sign(x) = \left\{\begin{array}{rcl}
                                 1 & \mbox{for} & x>0 
                                 \\0 & \mbox{for} & x = 0
                                 \\-1 & \mbox{for} & x<0
-              \end{array}\right.$$
-The inverse of the cumulative distribution function is given by:
-$$ F^{-1}(y) = \mu - \frac{1}\lambda sign(y-0.5)ln(1-2|y-0.5|)$$
-(Source : https://en.wikipedia.org/wiki/Laplace_distribution)
+              \end{array}\right.$$ The inverse of the cumulative
+distribution function is given by:
+$$ F^{-1}(y) = \mu - \frac{1}\lambda sign(y-0.5)ln(1-2|y-0.5|)$$ (Source
+: <https://en.wikipedia.org/wiki/Laplace_distribution>)
 
-This function can be used to generate random numbers from the Laplace distribution. The following code generates 10000 random numbers from the Laplace distribution and plots the histogram:
+This function can be used to generate random numbers from the Laplace
+distribution. The following code generates 10000 random numbers from the
+Laplace distribution and plots the histogram:
 
-```{r} 
+```{r}
 de <- function(x, mu, lambda){
   return(lambda/2 * exp(-lambda * abs(x-mu)))
 }
@@ -45,15 +55,28 @@ curve(de(x, 0, 1)*2000, add = TRUE, col = "red")
 ```
 
 ### b)
-Use rejection sampling with DE(0, 1) as envelope to generate N(0, 1) variables. Explain step by step how this was done. How did you choose constant a in this method? Generate 2000 random numbers N (0, 1) using your code and plot the histogram. Compute the average rejection rate R in the rejection sampling procedure. What is the expected rejection rate ER and how close is it to R? 
 
-The rejection sampling method is based on the following theorem:
-Let $f$ be a probability density function and $g$ be a probability density function such that $f(x) \leqslant ag(x)$ for all $x$ and some constant $a$. Then the following algorithm generates a random variable $X$ with density $f$:
-1. Generate $Y$ from $g$
-2. Generate $U$ from $U(0,1)$
-3. If $U \leqslant \frac{f(Y)}{ag(Y)}$ then set $X=Y$ otherwise go to step 1.
+Use rejection sampling with DE(0, 1) as envelope to generate N(0, 1)
+variables. Explain step by step how this was done. How did you choose
+constant a in this method? Generate 2000 random numbers N (0, 1) using
+your code and plot the histogram. Compute the average rejection rate R
+in the rejection sampling procedure. What is the expected rejection rate
+ER and how close is it to R?
 
-In this case, $f$ is the standard normal distribution and $g$ is the Laplace distribution. The constant $a$ is chosen such that $f(x) \leqslant ag(x)$ for all $x$. This is the case when $a = \frac{1}{\sqrt{2\pi}}$. The following code generates 2000 random numbers from the standard normal distribution using the rejection sampling method and plots the histogram:
+The rejection sampling method is based on the following theorem: Let $f$
+be a probability density function and $g$ be a probability density
+function such that $f(x) \leqslant ag(x)$ for all $x$ and some constant
+$a$. Then the following algorithm generates a random variable $X$ with
+density $f$: 1. Generate $Y$ from $g$ 2. Generate $U$ from $U(0,1)$ 3.
+If $U \leqslant \frac{f(Y)}{ag(Y)}$ then set $X=Y$ otherwise go to step
+1.
+
+In this case, $f$ is the standard normal distribution and $g$ is the
+Laplace distribution. The constant $a$ is chosen such that
+$f(x) \leqslant ag(x)$ for all $x$. This is the case when
+$a = \frac{1}{\sqrt{2\pi}}$. The following code generates 2000 random
+numbers from the standard normal distribution using the rejection
+sampling method and plots the histogram:
 
 ```{r}
 #Rejection sampling method
@@ -97,9 +120,11 @@ curve(dnorm(x, mean = 0, sd = 1)*200, add = TRUE, col = "red")
 curve(de(x, 0, 1)*200/a, add = TRUE, col = "blue")
 
 ```
+
 The rejection rate is `r rejection_rate`.
 
-Generate 2000 numbers from N (0, 1) using standard rnorm() procedure, plot the histogram and compare the obtained two histograms.
+Generate 2000 numbers from N (0, 1) using standard rnorm() procedure,
+plot the histogram and compare the obtained two histograms.
 
 ```{r}
 #Generate 2000 random numbers from N(0,1) using rnorm()
@@ -109,7 +134,8 @@ hist(X, breaks = 100)
 curve(dnorm(x, mean = 0, sd = 1)*100, add = TRUE, col = "red")
 ```
 
-Comparaison: 
+Comparaison:
+
 ```{r}
 library(ggplot2)
 df1 <- data.frame(X_rej)
@@ -120,3 +146,200 @@ ggplot(df1, aes(x = X_rej)) + geom_histogram(bins= 100,fill = "blue", alpha = 0.
 ```
 
 The two histograms are very similar.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## Question 2: Gibbs sampling
+
+Let X = (X1 , X2 ) be a bivariate distribution with density
+$f (x_1 , x_2 ) ∝ 1\{x_1^2 + wx_1 x_2 + x_2^2 < 1\}$ for some specific w
+with \|w\| \< 2. X has a uniform distribution on some two-dimensional
+region. We consider here the case w = 1.999 (in Lecture 4, the case w =
+1.8 was shown).
+
+### a.
+
+Draw the boundaries of the region where X has a uniform distribution.
+You can use the code provided on the course homepage and adjust it.
+
+```{r 2a}
+
+###############################
+### Boundary ellipse 
+### for Gibbs sampling example
+### from Lecture 4
+### Fall 2023, by Frank Miller
+###############################
+w  <- 1.999
+xv <- seq(-1, 1, by=0.01) * 1/sqrt(1-w^2/4)  # a range of x1-values, where the term below the root is non-negative (compare Lecture 4)
+plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1)
+# ellipse
+lines(xv, -(w/2)*xv-sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
+lines(xv, -(w/2)*xv+sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
+```
+
+### b.
+
+What is the conditional distribution of X1 given X2 and that of X2 given
+X1 ?
+
+The conditional distribution $f(x_1|x_2)$ is a uniform distribution on
+the interval
+$(-0.9995x_1 - \sqrt{1-0.00099975 x_1}, -0.9995x_1 + \sqrt{1-0.00099975 x_1})$
+
+The conditional distribution $f(x_2|x_1)$ is a uniform distribution on
+the interval
+$(-0.9995x_2 - \sqrt{1-0.00099975 x_2}, -0.9995x_2 + \sqrt{1-0.00099975 x_2})$
+
+### c.
+
+Write your own code for Gibbs sampling the distribution. Run it to
+generate n = 1000 random vectors and plot them into the picture from
+Part a.
+
+```{r 2c}
+#Gibbs sampling
+f1_cond <- function(x2){
+  return(runif(1, min = -0.9995*x2 - sqrt(1-0.00099975*x2), max = -0.9995*x2 + sqrt(1-0.00099975*x2)))
+}
+f2_cond <- function(x1){
+  return(runif(1, min = -0.9995*x1 - sqrt(1-0.00099975*x1), max = -0.9995*x1 + sqrt(1-0.00099975*x1)))
+}
+
+set.seed(12345)
+n <- 1000
+x1 <- 0
+x2 <- 0
+X1 <- c()
+X2 <- c()
+for(i in 1:n){
+  x1 <- f1_cond(x2)
+  x2 <- f2_cond(x1)
+  X1 <- c(X1, x1)
+  X2 <- c(X2, x2)
+}
+
+w  <- 1.999
+xv <- seq(-1, 1, by=0.01) * 1/sqrt(1-w^2/4)  # a range of x1-values, where the term below the root is non-negative (compare Lecture 4)
+plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1)
+# ellipse
+lines(xv, -(w/2)*xv-sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
+lines(xv, -(w/2)*xv+sqrt(1-(1-w^2/4)*xv^2), lwd=2, col=8)
+#Add the points X1 and X2 to the graph
+points(X1, X2, col = "red", pch = 20, cex = 0.5)
+
+```
+
+Determine P (X1 \> 0) based on the sample and repeat this a few times
+(you need not to plot the repetitions). What should be the true result
+for this probability?
+
+P(X1 \> 0) = `r mean(X1 > 0)`. The true result should be 0.5. Using the
+same code, we can repeat the experiment a few times and it seems that
+the result is always close to 0.5, but this is very dependent on the
+starting values of X1 and X2.
+
+```{r 2c2}
+#Determine P(X1 > 0)
+
+means <- c()
+for(i in 1:100){
+  set.seed(i)
+  n <- 1000
+  x1 <- 0
+  x2 <- 0
+  X1 <- c()
+  X2 <- c()
+  for(i in 1:n){
+    x1 <- f1_cond(x2)
+    x2 <- f2_cond(x1)
+    X1 <- c(X1, x1)
+    X2 <- c(X2, x2)
+  }
+  means <- c(means, mean(X1 > 0))
+}
+#mean(means)
+```
+
+After running the code 100 times, we get a mean of `r mean(means)`.
+
+### d.
+
+Discuss, why the Gibbs sampling for this situation seems to be less
+successful for w = 1.999 compared to the case w = 1.8 from the lecture.
+
+The Gibbs sampling for this situation seems to be less successful for w
+= 1.999 compared to the case w = 1.8 from the lecture because the
+boundaries of the region where X has a uniform distribution are very
+close to each other. This makes it hard for the simulation to cover the
+whole region because the probability of the simulation to jump from one
+side of the region to the other is very low. This is why the simulation
+is very dependent on the starting values of X1 and X2.
+
+### e.
+
+We might transform the variable X and generate
+$U = (U_1, U_2) = (X_1 − X_2, X_1 + X_2)$ instead. In this case, the
+density of the transformed variable $U = (U_1, U_2)$ is again a uniform
+distribution on a transformed region (no proof necessary for this
+claim). Determine the boundaries of the transformed region where U has a
+uniform distribution on. You can use that the transformation corresponds
+to $X_1 = (U_2 + U_1)/2$ and $X_2 = (U_2 − U_1)/2$ and set this into the
+boundaries in terms of $X_i$ . Plot the boundaries for $(U_1, U_2)$.
+Generate n = 1000 random vectors with Gibbs sampling for U and plot
+them. Determine $P(X_1 > 0) = P((U_2 + U_1)/2 > 0)$. Compare the results
+with Part c.
+
+Using the transformation, we get the following expression for
+$f(u_1, u_2)$ :
+
+$f(u_1, u_2) = 1\{u_2^2(0.5+0.25*w)+u_1^2(0.5-0.25*w) < 1\}$
+
+we can then get the conditional by solving the equation
+$u_2^2(0.5+0.25*w)+u_1^2(0.5-0.25*w) -1 = 0$ for $u_1$ and $u_2$
+respectively.
+
+We then obtain that the conditional distribution for $u_2$ given $u_1$
+is a uniform distribution on the interval (
+$-\sqrt{1-u_1^2(0.5-0.25*w)\over{0.5+0.25*w}}$
+,$\sqrt{1-u_1^2(0.5-0.25*w)\over{0.5+0.25*w}}$) and the conditional
+distribution for $u_1$ given $u_2$ is a uniform distribution on the
+interval ( $-\sqrt{1-u_2^2(0.5+0.25*w)\over{0.5-0.25*w}}$
+,$\sqrt{1-u_2^2(0.5+0.25*w)\over{0.5-0.25*w}}$) and
+
+```{r 2e}
+#Gibbs sampling
+xv <- seq(-sqrt(4000), sqrt(4000) , by=0.01)   # a range of x1-values, where the term below the root is non-negative (compare Lecture 4)
+plot(xv, xv, type="n", xlab=expression(x[1]), ylab=expression(x[2]), las=1, ylim = c(-5,5))
+# ellipse
+lines(xv, -sqrt(1-xv^2*0.00025)/(0.99975), lwd=2, col=8)
+lines(xv, sqrt(1-xv^2*0.00025)/(0.99975), lwd=2, col=8)
+
+u1_given_ <- function(u2){
+  return(runif(1, min = -sqrt(1-u2^2*0.00025)/(0.99975), max = sqrt(1-u2^2*0.00025)/(0.99975)))
+}
+u2_given_ <- function(u1){
+  return(runif(1, min = -sqrt(1-u1^2*0.99975)/(0.00025), max = sqrt(1-u1^2*0.99975)/(0.00025)))
+}
+
+means <- c()
+for(i in 1:100){
+  n <- 1000
+  u1 <- 0
+  u2 <- 0
+  U1 <- c()
+  U2 <- c()
+  for(i in 1:n){
+    cat(u1, "\r")
+    u1 <- u1_given_(u2)
+    u2 <- u2_given_(u1)
+    U1 <- c(U1, u1)
+    U2 <- c(U2, u2)
+  }
+  means <- c(means, mean(U1))
+}
+mean(means)
+
+```
