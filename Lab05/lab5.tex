@@ -1,0 +1,146 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={lab5},
+  pdfauthor={Hugo Morvan, Daniele Bozzoli},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{lab5}
+\author{Hugo Morvan, Daniele Bozzoli}
+\date{2023-12-01}
+
+\begin{document}
+\maketitle
+
+\hypertarget{question-1-hypothesis-testing}{%
+\section{Question 1: Hypothesis
+testing}\label{question-1-hypothesis-testing}}
+
+\hypertarget{section}{%
+\subsection{1.}\label{section}}
+
+Create a scatterplot of Y versus X, are any patterns visible?
+
+\hypertarget{section-1}{%
+\subsection{2.}\label{section-1}}
+
+Fit a curve to the data. First fit an ordinary linear model and then fit
+and then one using loess(). Do these curves suggest that the lottery is
+random? Explore how the resulting estimated curves are encoded and
+whether it is possible to identify which parameters are responsible for
+non--randomness.
+
+\hypertarget{section-2}{%
+\subsection{3.}\label{section-2}}
+
+In order to check if the lottery is random, one can use various
+statistics. One such possibility is based on the expected responses. The
+fitted loess smoother provides an estimate \(\hat{Y}\) as a function of
+X. It the lottery was random, we would expect \(\hat{Y}\) to be a flat
+line, equaling the empirical mean of the observed responses, Y . The
+statistic we will consider will be
+\[ S = \sum_{i=1}^{n}|\hat{Y}_i-\bar{Y}| \]
+
+If S is not close to zero, then this indicates some trend in the data,
+and throws suspicion on the randomness of the lottery. Estimate S's
+distribution through a non--parametric bootstrap, taking B = 2000
+bootstrap samples. Decide if the lottery looks random, what is the
+p--value of the observed value of S.
+
+\hypertarget{section-3}{%
+\subsection{4.}\label{section-3}}
+
+We will now want to investigate the power of our considered test. First
+based on the test statistic S, implement a function that tests the
+hypothesis H0 : Lottery is random versus H1 : Lottery is non--random.
+The function should return the value of S and its p--value, based on
+2000 bootstrap samples.
+
+\hypertarget{section-4}{%
+\subsection{5.}\label{section-4}}
+
+Now we will try to make a rough estimate of the power of the test
+constructed in Step 4 by generating more and more biased samples:
+
+\hypertarget{a}{%
+\subsubsection{(a)}\label{a}}
+
+Create a dataset of the same dimensions as the original data. Choose k,
+out of the 366, dates and assign them the end numbers of the lottery
+(i.e., they are not legible for the draw). The remaining 366 - k dates
+should have random numbers assigned (from the set \{1, . . . , 366 -
+k\}). The k dates should be chosen in two ways: \#\#\#\# i. k
+consecutive dates, \#\#\#\# ii. as blocks (randomly scattered) of
+\(\lfloor k/3 \rfloor\) consecutive dates (this is of course for
+\(k ≥ 3\), and if k is not divisible by 3, then some blocks can be of
+length \$ \lfloor k/3 \rfloor +1\$). \#\#\# (b) For each of the Plug the
+two new not--completely--random datasets from item 5a into the bootstrap
+test with B = 2000 and note whether it was rejected. \#\#\# (c) Repeat
+Steps 5a--5b for k = 1, . . . , until you have observed a couple of
+rejections.
+
+How good is your test statistic at rejecting the null hypothesis of a
+random lottery?
+
+\end{document}

@@ -1,0 +1,133 @@
+---
+title: "lab5"
+author: "Hugo Morvan, Daniele Bozzoli"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1: Hypothesis testing
+
+In 1970, the US Congress instituted a random selection process for the military draft. All 366 possible birth dates were placed in plastic capsules in a rotating drum and were selected one by one. The first date drawn from the drum received draft number one, the second date drawn received draft number two, etc. Then, eligible men were drafted in the order given by the draft number of their birth date. In a truly random lottery there should be no relationship between the date and the draft number. Your task is to investigate whether there can be doubts concerning the randomness of the selection of the draft numbers. The draft numbers (Y=Draft_No) sorted by day of year (X=Day_of_year) are given in the file lottery.csv. The data was originally published by the U.S. Government, and most conveniently made available online at http://jse.amstat.org/jse_data_archive.htm (see also Starr Norton (1997) Nonrandom Risk: The 1970 Draft Lottery, Journal of Statistics Education, 5:2, DOI: 10.1080/10691898.1997.11910534)
+
+## 1. 
+Create a scatterplot of Y versus X, are any patterns visible?
+```{r 1.1}
+#1.1
+data=read.csv("lottery.csv", header = TRUE, sep = ";")
+summary(data)
+plot(data$Day_of_year, data$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
+```
+There is no clear pattern visible in this data. 
+## 2. 
+Fit a curve to the data. First fit an ordinary linear model and then fit and then one using loess(). Do these curves suggest that the lottery is random? Explore how the resulting estimated curves are encoded and whether it is possible to identify which parameters are responsible for non–randomness.
+
+```{r 1.2}
+#1.2
+model=lm(Draft_No ~ Day_of_year , data=data)
+summary(model)
+plot(data$Day_of_year, data$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
+abline(model, col="red")
+
+model2=loess(Draft_No ~ Day_of_year , data=data)
+summary(model2)
+plot(data$Day_of_year, data$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
+lines(data$Day_of_year, model2$fitted, col="red")
+
+```
+
+## 3. 
+In order to check if the lottery is random, one can use various statistics. One such possibility is based on the expected responses. The fitted loess smoother provides an estimate $\hat{Y}$ as a function of X. It the lottery was random, we would expect $\hat{Y}$ to be a flat line, equaling the empirical mean of the observed responses, Y . The statistic we will consider will be $$ S = \sum_{i=1}^{n}|\hat{Y}_i-\bar{Y}| $$
+
+If S is not close to zero, then this indicates some trend in the data, and throws suspicion on the randomness of the lottery. Estimate S’s distribution through a non–parametric bootstrap, taking B = 2000 bootstrap samples. Decide if the lottery looks random, what is the p–value of the observed value of S.
+
+```{r 1.3}
+#1.3
+S = sum(abs(model2$fitted-mean(data$Draft_No)))
+B=2000
+S_boot=rep(NA, B)
+for (b in 1:B){
+  data_boot=data[sample(1:nrow(data), replace = TRUE),]
+  model_boot=loess(Draft_No ~ Day_of_year , data=data_boot)
+  S_boot[b]=sum(abs(model_boot$fitted-mean(data_boot$Draft_No)))
+}
+p_value=sum(S_boot>S)/B
+p_value
+```
+the p_value is 0.556 on 364 degrees of freedom. We can't reject the null hypothesis that the lottery is random? 
+
+## 4. 
+We will now want to investigate the power of our considered test. First based on the test statistic S, implement a function that tests the hypothesis H0 : Lottery is random versus H1 : Lottery is non–random.
+The function should return the value of S and its p–value, based on 2000 bootstrap samples.
+
+```{r 1.4}
+#1.4
+test=function(data){
+  model=loess(Draft_No ~ Day_of_year , data=data)
+  S=sum(abs(model$fitted-mean(data$Draft_No)))
+  B=2000
+  S_boot=rep(NA, B)
+  for (b in 1:B){
+    data_boot=data[sample(1:nrow(data), replace = TRUE),]
+    model_boot=loess(Draft_No ~ Day_of_year , data=data_boot)
+    S_boot[b]=sum(abs(model_boot$fitted-mean(data_boot$Draft_No)))
+  }
+  p_value=sum(S_boot>S)/B
+  return(list(S=S, p_value=p_value))
+}
+
+```
+
+
+## 5. 
+Now we will try to make a rough estimate of the power of the test constructed in Step 4 by generating more and more biased samples:
+
+(a) 
+Create a dataset of the same dimensions as the original data. Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw). The remaining 366 - k dates should have random numbers assigned (from the set {1, . . . , 366 - k}). The k dates should be chosen in two ways:
+
+i. k consecutive dates,
+  
+ii. as blocks (randomly scattered) of $\lfloor k/3 \rfloor$  consecutive dates (this is of course for $k ≥ 3$, and if k is not divisible by 3, then some blocks can be of length $ \lfloor k/3 \rfloor +1$).
+
+```{r 1.5a}
+#1.5
+#(a)
+#i
+k=10
+data2=data
+data2$Draft_No=sample(1:(366-k), 366-k)
+data2$Draft_No[1:k]=366-k+1:366
+model2=loess(Draft_No ~ Day_of_year , data=data2)
+S=sum(abs(model2$fitted-mean(data2$Draft_No)))
+B=2000
+S_boot=rep(NA, B)
+for (b in 1:B){
+  data_boot=data2[sample(1:nrow(data2), replace = TRUE),]
+  model_boot=loess(Draft_No ~ Day_of_year , data=data_boot)
+  S_boot[b]=sum(abs(model_boot$fitted-mean(data_boot$Draft_No)))
+}
+p_value=sum(S_boot>S)/B
+p_value
+
+```
+
+(b) 
+For each of the Plug the two new not–completely–random datasets from item 5a into the bootstrap test with B = 2000 and note whether it was rejected.
+
+```{r 1.5b}
+#(b)
+```
+
+(c) 
+Repeat Steps 5a–5b for k = 1, . . . , until you have observed a couple of rejections.
+
+```{r 1.5c}
+#(c)
+
+```
+How good is your test statistic at rejecting the null hypothesis of a random lottery?
