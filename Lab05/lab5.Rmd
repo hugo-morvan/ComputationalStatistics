@@ -56,10 +56,11 @@ for (b in 1:B){
   model_boot=loess(Draft_No ~ Day_of_year , data=data_boot)
   S_boot[b]=sum(abs(model_boot$fitted-mean(data_boot$Draft_No)))
 }
-p_value=sum(S_boot>S)/B
+p_value=mean(S_boot>S)
+S
 p_value
 ```
-the p_value is 0.556 on 364 degrees of freedom. We can't reject the null hypothesis that the lottery is random? 
+the p_value is 0.556 on 364 degrees of freedom. We can't reject the null hypothesis that the lottery is random (?) 
 
 ## 4. 
 We will now want to investigate the power of our considered test. First based on the test statistic S, implement a function that tests the hypothesis H0 : Lottery is random versus H1 : Lottery is non–random.
@@ -67,20 +68,28 @@ The function should return the value of S and its p–value, based on 2000 boots
 
 ```{r 1.4}
 #1.4
-test=function(data){
+#Permutation test:
+
+test_hyp=function(data){
   model=loess(Draft_No ~ Day_of_year , data=data)
-  S=sum(abs(model$fitted-mean(data$Draft_No)))
+  S=sum(abs(model$fitted-mean(data$Draft_No))) #1: T(X) value of statistic from observed data 
   B=2000
   S_boot=rep(NA, B)
+  #generate B bootstrap samples without replacement
   for (b in 1:B){
-    data_boot=data[sample(1:nrow(data), replace = TRUE),]
-    model_boot=loess(Draft_No ~ Day_of_year , data=data_boot)
-    S_boot[b]=sum(abs(model_boot$fitted-mean(data_boot$Draft_No)))
+    #2: Create permutations g_1, g_B of group variable {If the number of permutations is too large, sample B randomly without replacement. E.g. generate random permutations and keep only unique ones.}
+    data_boot = data
+    data_boot$Day_of_year = sample(data$Day_of_year, replace = FALSE) #without replacement
+    model_boot=loess(Draft_No ~ Day_of_year , data=data_boot) #fitting the model
+    #3: Evaluate test statistic on each permutation
+    S_boot[b] = sum(abs(model_boot$fitted-mean(data_boot$Draft_No))) 
+    
   }
-  p_value=sum(S_boot>S)/B
+  p_value=mean(S_boot>=S) #4: Estimate p–value: p^ = #{T(X_gb) >= T(X)}/B
   return(list(S=S, p_value=p_value))
 }
 
+test_hyp(data)
 ```
 
 
@@ -88,7 +97,7 @@ test=function(data){
 Now we will try to make a rough estimate of the power of the test constructed in Step 4 by generating more and more biased samples:
 
 (a) 
-Create a dataset of the same dimensions as the original data. Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw). The remaining 366 - k dates should have random numbers assigned (from the set {1, . . . , 366 - k}). The k dates should be chosen in two ways:
+Create a dataset of the same dimensions as the original data. Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw). The remaining 366 - k dates should have random numbers assigned (from the set {1,..., 366 - k}). The k dates should be chosen in two ways:
 
 i. k consecutive dates,
   
@@ -97,12 +106,20 @@ ii. as blocks (randomly scattered) of $\lfloor k/3 \rfloor$  consecutive dates (
 ```{r 1.5a}
 #1.5
 #(a)
-#i
-k=10
+#i k consecutive dates,
+
+#Create a dataset of the same dimensions as the original data. 
 data2=data
-data2$Draft_No=sample(1:(366-k), 366-k)
-data2$Draft_No[1:k]=366-k+1:366
+
+#Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw).
+k=10
+data2$Draft_No[1:k] = 366-k+1:366
+#The remaining 366 - k dates should have random numbers assigned (from the set {1,..., 366 - k})
+data2$Draft_No[k:366] = sample(1:(366-k), 366-k, replace = TRUE) 
+
+
 model2=loess(Draft_No ~ Day_of_year , data=data2)
+plot(data2$Day_of_year, data2$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
 S=sum(abs(model2$fitted-mean(data2$Draft_No)))
 B=2000
 S_boot=rep(NA, B)
@@ -121,6 +138,8 @@ For each of the Plug the two new not–completely–random datasets from item 5a
 
 ```{r 1.5b}
 #(b)
+
+
 ```
 
 (c) 
