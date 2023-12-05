@@ -112,14 +112,72 @@ ii. as blocks (randomly scattered) of $\lfloor k/3 \rfloor$  consecutive dates (
 data2=data
 
 #Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw).
-k=10
-data2$Draft_No[1:k] = 366-k+1:366
-#The remaining 366 - k dates should have random numbers assigned (from the set {1,..., 366 - k})
-data2$Draft_No[k:366] = sample(1:(366-k), 366-k, replace = TRUE) 
-
-
+#===================
+k=300
+#===================
+#Randomize the first 366-k dates
+data2$Draft_No[366-k:366]=
 model2=loess(Draft_No ~ Day_of_year , data=data2)
 plot(data2$Day_of_year, data2$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
+
+#ii. as blocks (randomly scattered) of $\lfloor k/3 \rfloor$  consecutive dates (this is of course for $k ≥ 3$, and if k is not divisible by 3, then some blocks can be of length $ \lfloor k/3 \rfloor +1$).
+
+data3=data
+
+get_lotery_numbers_with_chunks <- function(k){
+  #k is the number of dates that are not legible for the draw
+  # 3 cases : 
+  # 1. n_chunks is an integer -> 3 normal chunks
+  # 2. n_chunks is not an integer and has a remainder of 1 -> 2 normal chunks and 1 long chunk
+  # 3. n_chunks is not an integer and has a remainder of 2 -> 1 normal chunk and 2 long
+  
+  #Case 1
+  if(k%%3 == 0){
+    chunk_size = floor(k/3)
+    n_chunks = 3
+    for (i in 1:n_chunks){
+      #Sample n_chunks_normal chunks of length chunk_size
+      #random starting point
+      start = sample(1:366, 1, replace = TRUE)
+      #sample chunk_size consecutive days
+      data3$Draft_No[start:start+chunk_size-1] = sample(1:(366-k), chunk_size, replace = TRUE)
+    }
+    
+  }
+  
+  # chunk_size = floor(k/3)
+  # remainder = k%%chunk_size
+  # n_chunks_normal = floor(k/chunk_size) - remainder
+  # n_chunks_long = remainder
+  # for (i in 1:n_chunks_normal){
+  # #Sample n_chunks_normal chunks of lenght chunk_size
+  # #random starting point
+  # start = sample(1:366, 1, replace = TRUE)
+  # #sample chunk_size consecutive days
+  # data3$Draft_No[start:start+chunk_size-1] = sample(1:(366-k), chunk_size, replace = TRUE)
+  # }
+  # for (i in 1:n_chunks_long){
+  #    #Sample n_chunks_long chunks of lenght chunk_size+1
+  #   start = sample(1:366, 1, replace = TRUE)
+  #   #sample chunk_size consecutive days
+  #   data3$Draft_No[start:start+chunk_size] = sample(1:(366-k), chunk_size+1, replace = TRUE)
+  # }
+  # data3$Draft_No[n_chunks_normal*chunk_size+n_chunks_long*(chunk_size+1):366] = sample(1:(366-k), 366-k, replace = TRUE)
+
+}
+
+
+
+model3=loess(Draft_No ~ Day_of_year , data=data3)
+plot(data3$Day_of_year, data3$Draft_No, xlim = c(0, 366), ylim = c(0, 366), xlab = "Day of year", ylab = "Draft No")
+```
+
+(b) 
+For each of the Plug the two new not–completely–random datasets from item 5a into the bootstrap test with B = 2000 and note whether it was rejected.
+
+```{r 1.5b}
+#(b)
+
 S=sum(abs(model2$fitted-mean(data2$Draft_No)))
 B=2000
 S_boot=rep(NA, B)
@@ -133,17 +191,8 @@ p_value
 
 ```
 
-(b) 
-For each of the Plug the two new not–completely–random datasets from item 5a into the bootstrap test with B = 2000 and note whether it was rejected.
-
-```{r 1.5b}
-#(b)
-
-
-```
-
 (c) 
-Repeat Steps 5a–5b for k = 1, . . . , until you have observed a couple of rejections.
+Repeat Steps 5a–5b for k = 1, ... , until you have observed a couple of rejections.
 
 ```{r 1.5c}
 #(c)
