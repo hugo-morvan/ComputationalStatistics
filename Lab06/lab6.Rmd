@@ -16,31 +16,110 @@ In this assignment, you will try to solve the n–queen problem using a genetic 
 
 An individual in the population is a chessboard with some placement of the n queens on it. The first task is to code an individual. You are to consider three encodings for this question.
 
-* (a) A collection (e.g., a list—but the choice of data structure is up to you) of n pairs denoting the coordinates of each queen, e.g., (5, 6) would mean that a queen is standing in row 5 and column 6. We are not using chess notation (in this case e5) as we do not want to limit n by 26 and also further work will be easier with a numerical notation.
+* (a) A collection (e.g., a list—but the choice of data structure is up to you) of n pairs denoting the coordinates of each queen, e.g., (5, 6) would mean that a queen is standing in row 5 and column 6.
 
 ```{r 1.1.a}
 #1.1.a 
+# Pairs representing the coordinates of each queen, stored in a matrix
+# Representation_type = "pairs"
+n <- 5
+pairs <- matrix(nrow = n, ncol = 2)
+for (i in 1:n){
+  pairs[i,] <- sample(1:n, 2)
+}
+typeof(pairs) #integer
+ncol(pairs) #2
+print(pairs)
 ```
 
 * (b) On n numbers, where each number has log2 n binary digits—this number encodes the position of the queen in the given column. Notice that as queens cannot attack each other, in a legal configuration there can be only one queen per column. You can pad your binary representation with 0s if necessary.
 
 ```{r 1.1.b}
 #1.1.b
+# A list of n numbers, where each number is a binary representation of the position of the queen 
+# in the given column
+# Representation_type = "binary"
+n <- 5
+binary <- list()
+for (i in 1:n){
+  binary[[i]] <- c(as.integer(intToBits(sample(1:n, 1))))
+}
+typeof(binary) #list
+ncol(binary) #NULL
+print(binary)
+
 ```
 
 *(c) On n numbers, where each number is the row number of the queen in each column. Notice that this encoding differs from the previous one by how the row position is stored. Here it is an integer, in item 1b it was represented through its binary representation. This will induce different ways of crossover and mutating the state.
-The tasks below, 2–7 are to be repeated for each of the three encodings above.
+
 
 ```{r 1.1.c}
 #1.1.c
+# A list of n numbers, where each number is the row number of the queen in each column
+# Representation_type = "singles"
+n <- 5
 
+row <- c()
+for (i in 1:n){
+  row[i] <- sample(1:n, 1)
+}
+typeof(row) #integer
+ncol(row) #NULL
+print(row)
 ```
+The tasks below, 2–7 are to be repeated for each of the three encodings above.
+
 ### 2. 
 
 Define the function crossover(): for two chessboard layouts it creates a kid by taking columns 1,..., p from the first individual and columns p + 1,..., n from the second. Obviously, 0 < p <= n/2, and p in N. Experiment with different values of p.
+
 ```{r 1.2}
 #1.2
+
+crossover <- function(layout1, layout2, p){
+  #Given 2 chessboard layouts, returns a kid by taking columns 1,..., p from the first individual and columns p + 1,..., n from the second.
+  if(typeof(layout1) != typeof(layout2) | ncol(layout1) != ncol(layout2)){
+    stop("The layouts must have the same representation type")
+  }
+  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+    #PAIRS (matrix)
+    #Idea : for layout1 and layout 2, take the first p pairs from layout1 and the last n-p pairs from layout2 by looping through the lists
+    kid <- matrix(nrow = nrow(layout1), ncol = 2)
+    for (i in 1:p){
+      kid[i,] <- layout1[i,]
+    }
+    for (i in (p+1):nrow(layout2)){
+      kid[i,] <- layout2[i,]
+    }
+    return(kid)
+  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
+    #BINARY (one binary rep = one column)
+    #Idea: take the first p  binary representation of layout1 and the last n-p  binary representation of layout2
+    kid <- list()
+    for (i in 1:p){
+      kid[[i]] <- layout1[[i]]
+    }
+    for (i in (p+1):length(layout2)){
+      kid[[i]] <- layout2[[i]]
+    }
+    return(kid)
+  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
+    #SINGLES
+    #Take the first p number from layout 1 and adds them to the kid, then take the last n-p numbers from layout 2 and adds them to the kid
+    kid <- c()
+    for (i in 1:p){
+      kid[i] <- layout1[i]
+    }
+    for (i in (p+1):length(layout2)){
+      kid[i] <- layout2[i]
+    }
+    return(kid)
+  }
+  
+}
+
 ```
+
 
 ### 3. 
 
@@ -48,14 +127,53 @@ Define the function mutate() that randomly moves a queen to a new position.
 
 ```{r 1.3}
 #1.3
+mutate <- function(layout){
+  if(typeof(layout1) != typeof(layout2) | ncol(layout1) != ncol(layout2)){
+    stop("The layouts must have the same representation type")
+  }
+  #Given a chessboard layout, returns a layout with a randomly moved queen
+  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+    #PAIRS (matrix)
+    #randomly select a row and a column and change the value of the pair at this position
+    #check if the new queen is not on another queen , and if it is not off the board
+    
+    return(new_layout)
+  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
+    #BINARY (one binary rep = one column)
+    #randomly flip a digit in a binary representation, and check if the new queen is not on another queen , and if it is not off the board
+    
+    return(new_layout)
+  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
+    #SINGLES
+    #randomly select a row and change the value of the number at this position, and check if the new queen is not on another queen , and if it is not off the board
+    
+    return(new_layout)
+  }
+}
 ```
 
 ### 4. 
 
-Define a fitness function for a given configuration. Experiment with three: binary—is a solution or not;number of queens not attacked; ( n2 -number) of pairs of queens attacking each other. If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. Try each fitness function for each encoding method. You should not expect the binary fitness function to work well, explain why this is so.
+Define a fitness function for a given configuration. 
+Experiment with three: 
+binary—is a solution or not;
+number of queens not attacked;
+( n2 -number) of pairs of queens attacking each other. 
+If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. Try each fitness function for each encoding method. You should not expect the binary fitness function to work well, explain why this is so.
 
 ```{r 1.4}
 #1.1.4
+fitness <- function(layout, fitness_function){
+  #Given a chessboard layout, returns the fitness of the layout
+  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+    
+  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
+  
+  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
+  
+  }
+  return(fitness)
+}
 ```
 
 
@@ -76,7 +194,7 @@ Implement a genetic algorithm that takes the choice of encoding, mutation probab
 
 ### 6. 
 
-If found return the legal configuration of queens.
+If found, return the legal configuration of queens.
 
 ```{r 1.6}
 #1.6
