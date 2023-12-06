@@ -102,9 +102,8 @@ Now we will try to make a rough estimate of the power of the test constructed in
 
 (a) Create a dataset of the same dimensions as the original data. Choose k, out of the 366, dates and assign them the end numbers of the lottery (i.e., they are not legible for the draw). The remaining 366 - k dates should have random numbers assigned (from the set {1,..., 366 - k}). The k dates should be chosen in two ways:
 
-```{=html}
 <!-- -->
-```
+
 i.  k consecutive dates,
 
 ii. as blocks (randomly scattered) of $\lfloor k/3 \rfloor$ consecutive dates (this is of course for $k >= 3$, and if k is not divisible by 3, then some blocks can be of length $\lfloor k/3 \rfloor +1$).
