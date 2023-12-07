@@ -72,9 +72,10 @@ The tasks below, 2–7 are to be repeated for each of the three encodings above.
 ```{r}
 vizualize_board <- function(layout, n){
   #Given a layout, vizualizes the board
+  #cat("Type of layout", typeof(layout), "\n", "Number of columns", ncol(layout), "\n")
   if(typeof(layout) == "list" & is.null(ncol(layout))){
     #Binary
-    print("Binary")
+    print("Viz: Binary rep detected")
     #Idea: create a matrix of 0s, then replace the 0s with 1s where the queens are
     board <- matrix(nrow = n, ncol = n)
     #fill the board with 0s
@@ -90,10 +91,11 @@ vizualize_board <- function(layout, n){
         }
       }
     }
-    print(board)
+    board <- t(board)
+    #print(board)
   }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
     #Singles
-    print("Singles")
+    print("Viz: Singles rep detected")
     #Idea: create a matrix of 0s, then replace the 0s with 1s where the queens are
     board <- matrix(nrow = n, ncol = n)
     #fill the board with 0s
@@ -105,10 +107,11 @@ vizualize_board <- function(layout, n){
     for (i in 1:n){
       board[i,layout[i]] <- 1
     }
-    print(board)
+    board <- t(board)
+    #print(board)
   }else if(typeof(layout) == "integer" & ncol(layout) == 2){
     #Pairs
-    print("pairs")
+    print("Viz: Pairs rep detected")
     #IDea: create a matrix of 0s, then replace the 0s with 1s where the queens are
     board <- matrix(nrow = n, ncol = n)
     #fill the board with 0s
@@ -120,11 +123,9 @@ vizualize_board <- function(layout, n){
     for (i in 1:nrow(layout)){
       board[layout[i,1], layout[i,2]] <- 1
     }
-    print(board)
+    #print(board)
   }
-  
-  #Once the board is created and filled, we can use the image() function to plot it
-  #Show the grid lines, and use white and black as colors, set the dimension to display a square
+  #Print the board in the console:
   for (i in 1:nrow(board)){
     cat("|")
     for (j in 1:ncol(board)){
@@ -136,11 +137,13 @@ vizualize_board <- function(layout, n){
     }
     cat("\n")
   }
-  
 }
-vizualize_board(pairs, 5)
-vizualize_board(binary, 5)
-vizualize_board(row ,5)
+# pairs
+# vizualize_board(pairs, 5)
+# binary
+# vizualize_board(binary, 5)
+# row
+# vizualize_board(row ,5)
 ```
 
 ### 2. 
@@ -152,11 +155,35 @@ Define the function crossover(): for two chessboard layouts it creates a kid by 
 
 crossover <- function(layout1, layout2, p){
   #Given 2 chessboard layouts, returns a kid by taking columns 1,..., p from the first individual and columns p + 1,..., n from the second.
-  if(typeof(layout1) != typeof(layout2) | ncol(layout1) != ncol(layout2)){
-    stop("The layouts must have the same representation type")
+  if(typeof(layout1) == "list" & is.null(ncol(layout1))){
+    #BINARY (one binary rep = one column)
+    print("Cross: Binary rep detected")
+    #Idea: take the first p columns from layout 1 and adds them to the kid, then take the last n-p colmuns from layout 2 and adds them to the kid
+    kid <- list()
+    for (i in 1:p){
+      kid[[i]] <- layout1[[i]]
+    }
+    for (i in (p+1):length(layout2)){
+      kid[[i]] <- layout2[[i]]
+    }
+    
+    return(kid)
   }
-  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+  else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
+    #SINGLES
+    print("Cross: Singles rep detected")
+    #Take the first p number from layout 1 and adds them to the kid, then take the last n-p numbers from layout 2 and adds them to the kid
+    kid <- c()
+    for (i in 1:p){
+      kid <- c(kid , layout1[i])
+    }
+    for (i in (p+1):length(layout2)){
+      kid <- c(kid , layout2[i])
+    }
+    return(kid)
+  }else if(typeof(layout1) == "integer" & ncol(layout1) == 2){
     #PAIRS (matrix)
+    print("Cross: Pairs rep detected")
     #Idea : for layout1 and layout 2, take the first p pairs from layout1 and the last n-p pairs from layout2 by looping through the lists
     kid <- matrix(nrow = nrow(layout1), ncol = 2)
     for (i in 1:p){
@@ -166,34 +193,51 @@ crossover <- function(layout1, layout2, p){
       kid[i,] <- layout2[i,]
     }
     return(kid)
-  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
-    #BINARY (one binary rep = one column)
-    #Idea: take the first p  binary representation of layout1 and the last n-p  binary representation of layout2
-    kid <- list()
-    for (i in 1:p){
-      kid[[i]] <- layout1[[i]]
-    }
-    for (i in (p+1):length(layout2)){
-      kid[[i]] <- layout2[[i]]
-    }
-    return(kid)
-  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
-    #SINGLES
-    #Take the first p number from layout 1 and adds them to the kid, then take the last n-p numbers from layout 2 and adds them to the kid
-    kid <- c()
-    for (i in 1:p){
-      kid[i] <- layout1[i]
-    }
-    for (i in (p+1):length(layout2)){
-      kid[i] <- layout2[i]
-    }
-    return(kid)
   }
   
 }
 
 ```
 
+```{r}
+#Testing the crossover function for n = 4, layout 1 is full of 1s, layout 2 is full of 0s, and p = 2
+#binary rep: 
+layout1 <- list()
+layout2 <- list()
+for (i in 1:4){
+  layout1[[i]] <- c(1,1,1,1)
+  layout2[[i]] <- 0
+}
+print("layout1")
+vizualize_board(layout1, 4)
+print("layout2")
+vizualize_board(layout2, 4)
+x1 <- crossover(layout1, layout2, 2)
+print("Crossover of layout1 and layout2 on p = 2")
+vizualize_board(x1, 4)
+print("_____________________")
+#singles rep:
+layout3 <- as.integer(c(1,2,3,4))
+layout4 <- as.integer(c(4,3,2,1))
+print("layout3")
+vizualize_board(layout3, 4)
+print("layout4")
+vizualize_board(layout4, 4)
+x2 <- crossover(layout3, layout4, 2)
+print("Crossover of layout3 and layout4 on p = 2")
+vizualize_board(x2, 4)
+print("_____________________")
+#pairs rep:
+layout5 <- matrix(as.integer(c(1,1,1,1,1,2,3,4)), nrow = 4, ncol = 2)
+layout6 <- matrix(as.integer(c(4,4,4,4,1,2,3,4)), nrow = 4, ncol = 2)
+print("layout5")
+vizualize_board(layout5, 4)
+print("layout6")
+vizualize_board(layout6, 4)
+x3 <- crossover(layout5, layout6, 2)
+print("Crossover of layout5 and layout6 on p = 2")
+vizualize_board(x3, 4)
+```
 
 ### 3. 
 
@@ -204,20 +248,24 @@ Define the function mutate() that randomly moves a queen to a new position.
 mutate <- function(layout){
   
   #Given a chessboard layout, returns a layout with a randomly moved queen
-  if(typeof(layout) == "integer" & ncol(layout1) == 2){
-    #PAIRS (matrix)
-    #randomly select a row and a column and change the value of the pair at this position
-    #check if the new queen is not on another queen , and if it is not off the board
-    
-    return(new_layout)
-  }else if(typeof(layout) == "list" & is.null(ncol(layout1))){
-    #BINARY (one binary rep = one column)
+  
+  if(typeof(layout) == "list" & is.null(ncol(layout))){
+    #BINARY 
+    print("Mut: Binary rep detected")
     #randomly flip a digit in a binary representation, and check if the new queen is not on another queen , and if it is not off the board
     
     return(new_layout)
-  }else if(typeof(layout) == "integer" & is.null(ncol(layout1))){
+  }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
     #SINGLES
+    print("Mut: Singles rep detected")
     #randomly select a row and change the value of the number at this position, and check if the new queen is not on another queen , and if it is not off the board
+    
+    return(new_layout)
+  }else if(typeof(layout) == "integer" & ncol(layout) == 2){
+    #PAIRS (matrix)
+    print("Mut: Pairs rep detected")
+    #randomly select a row and a column and change the value of the pair at this position
+    #check if the new queen is not on another queen , and if it is not off the board
     
     return(new_layout)
   }
@@ -237,12 +285,15 @@ If needed scale the value of the fitness function to [0, 1]. Experiment which co
 #1.1.4
 fitness <- function(layout, fitness_function){
   #Given a chessboard layout, returns the fitness of the layout
-  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+  if(typeof(layout) == "list" & is.null(ncol(layout))){
+    print("Fit: Binary rep detected")
     
-  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
-  
-  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
-  
+  }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
+    print("Fit: Singles rep detected")
+    
+  }if(typeof(layout) == "integer" & ncol(layout) == 2){
+    print("Fit: Pairs rep detected")
+    
   }
   return(fitness)
 }
