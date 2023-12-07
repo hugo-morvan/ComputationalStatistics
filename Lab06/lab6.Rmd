@@ -69,6 +69,80 @@ print(row)
 ```
 The tasks below, 2–7 are to be repeated for each of the three encodings above.
 
+```{r}
+vizualize_board <- function(layout, n){
+  #Given a layout, vizualizes the board
+  if(typeof(layout) == "list" & is.null(ncol(layout))){
+    #Binary
+    print("Binary")
+    #Idea: create a matrix of 0s, then replace the 0s with 1s where the queens are
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:n){
+      for (j in 1:length(layout[[i]])){
+        if(layout[[i]][j] == 1){
+          board[i,j] <- 1
+        }
+      }
+    }
+    print(board)
+  }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
+    #Singles
+    print("Singles")
+    #Idea: create a matrix of 0s, then replace the 0s with 1s where the queens are
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:n){
+      board[i,layout[i]] <- 1
+    }
+    print(board)
+  }else if(typeof(layout) == "integer" & ncol(layout) == 2){
+    #Pairs
+    print("pairs")
+    #IDea: create a matrix of 0s, then replace the 0s with 1s where the queens are
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:nrow(layout)){
+      board[layout[i,1], layout[i,2]] <- 1
+    }
+    print(board)
+  }
+  
+  #Once the board is created and filled, we can use the image() function to plot it
+  #Show the grid lines, and use white and black as colors, set the dimension to display a square
+  for (i in 1:nrow(board)){
+    cat("|")
+    for (j in 1:ncol(board)){
+      if(board[i,j] == 0){
+        cat(" |")
+      }else{
+        cat("Q|")
+      }
+    }
+    cat("\n")
+  }
+  
+}
+vizualize_board(pairs, 5)
+vizualize_board(binary, 5)
+vizualize_board(row ,5)
+```
+
 ### 2. 
 
 Define the function crossover(): for two chessboard layouts it creates a kid by taking columns 1,..., p from the first individual and columns p + 1,..., n from the second. Obviously, 0 < p <= n/2, and p in N. Experiment with different values of p.
@@ -128,22 +202,20 @@ Define the function mutate() that randomly moves a queen to a new position.
 ```{r 1.3}
 #1.3
 mutate <- function(layout){
-  if(typeof(layout1) != typeof(layout2) | ncol(layout1) != ncol(layout2)){
-    stop("The layouts must have the same representation type")
-  }
+  
   #Given a chessboard layout, returns a layout with a randomly moved queen
-  if(typeof(layout1) == "integer" & ncol(layout1) == 2){
+  if(typeof(layout) == "integer" & ncol(layout1) == 2){
     #PAIRS (matrix)
     #randomly select a row and a column and change the value of the pair at this position
     #check if the new queen is not on another queen , and if it is not off the board
     
     return(new_layout)
-  }else if(typeof(layout1) == "list" & is.null(ncol(layout1))){
+  }else if(typeof(layout) == "list" & is.null(ncol(layout1))){
     #BINARY (one binary rep = one column)
     #randomly flip a digit in a binary representation, and check if the new queen is not on another queen , and if it is not off the board
     
     return(new_layout)
-  }else if(typeof(layout1) == "integer" & is.null(ncol(layout1))){
+  }else if(typeof(layout) == "integer" & is.null(ncol(layout1))){
     #SINGLES
     #randomly select a row and change the value of the number at this position, and check if the new queen is not on another queen , and if it is not off the board
     
