@@ -152,7 +152,6 @@ Define the function crossover(): for two chessboard layouts it creates a kid by 
 
 ```{r 1.2}
 #1.2
-
 crossover <- function(layout1, layout2, p){
   #Given 2 chessboard layouts, returns a kid by taking columns 1,..., p from the first individual and columns p + 1,..., n from the second.
   if(typeof(layout1) == "list" & is.null(ncol(layout1))){
@@ -199,7 +198,7 @@ crossover <- function(layout1, layout2, p){
 
 ```
 
-```{r}
+```{r crossover.test}
 #Testing the crossover function for n = 4, layout 1 is full of 1s, layout 2 is full of 0s, and p = 2
 
 #binary rep: 
@@ -313,7 +312,7 @@ mutate <- function(layout,n){
 }
 ```
 
-```{r 1.3.test}
+```{r mutate.test}
 #Testing the mutate function for each representation
 #binary rep:
 layout1 <- list()
@@ -344,29 +343,114 @@ vizualize_board(mutated3, 4)
 
 Define a fitness function for a given configuration. 
 Experiment with three: 
-1) binary — is a solution or not;
-2) number of queens not attacked;
+1) binary — is a solution or not; "binary"
+2) number of queens not attacked; "num
 3) (nC2 - number) of pairs of queens attacking each other. 
-If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. Try each fitness function for each encoding method. You should not expect the binary fitness function to work well, explain why this is so.
+If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. 
+Try each fitness function for each encoding method. 
+You should not expect the binary fitness function to work well, explain why this is so.
 
 ```{r 1.4}
 #1.1.4
-fitness <- function(layout, fitness_function){
+fitness <- function(layout, fitness_function, n){
   #Given a chessboard layout, returns the fitness of the layout
   if(typeof(layout) == "list" & is.null(ncol(layout))){
     print("Fit: Binary rep detected")
-    
+    #Convert to a matrix
+    #Binary
+    print("Viz: Binary rep detected")
+    #Idea: create a matrix of 0s, then replace the 0s with 1s where the queens are
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:n){
+      for (j in 1:length(layout[[i]])){
+        if(layout[[i]][j] == 1){
+          board[i,j] <- 1
+        }
+      }
+    }
+    board <- t(board) 
   }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
     print("Fit: Singles rep detected")
-    
-  }if(typeof(layout) == "integer" & ncol(layout) == 2){
+    #Convert to a matrix
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:n){
+      board[i,layout[i]] <- 1
+    }
+    board <- t(board)
+  }else if(typeof(layout) == "integer" & ncol(layout) == 2){
     print("Fit: Pairs rep detected")
-    
+    #Convert to a matrix
+    board <- matrix(nrow = n, ncol = n)
+    #fill the board with 0s
+    for (i in 1:nrow(board)){
+      for (j in 1:ncol(board)){
+        board[i,j] <- 0
+      }
+    }
+    for (i in 1:nrow(layout)){
+      board[layout[i,1], layout[i,2]] <- 1
+    }
+  }
+  #At this point, the board var should contain a matrix on the state of the board, with 1s for queens and 0s for empty spaces
+  #Convert the board to a list of coordinates 
+  my_list <- list()
+  for(i in 1:n){
+    for(j in 1:n){
+      if(board[i,j]==1){
+        my_list <- append(my_list, c(i,j))
+      }
+    }
+  }
+  are_attacking_eachother <- function(Q1,Q2){
+    #https://stackoverflow.com/questions/57239548/how-to-check-if-a-queen-is-under-attack-in-nqueens
+    #"A queen can attack another if :
+    #they are on the same line : X1 = X2
+    #they are on the same column : Y1 = Y2
+    #they are on the same diagonal : X1-Y1 = X2-Y2 or X1+Y1 = X2+Y2"
+    (Q1[1] == Q2[1] | Q1[2] == Q2[2] | Q1[1]-Q1[2] == Q2[1]-Q2[2] | Q1[1]+Q1[2] == Q2[1]+Q2[2])
+  }
+  fitness <- 0
+  if(fitness_function == "binary"){
+      for(queen in 1:length(my_list)){
+        for(other_queen in queen:length(my_list)){
+          if(are_attacking_eachother(queen, other_queen)){
+            fitness <- 1
+          }
+        } 
+      }
+  }else if(fitness_function == "num_safe"){
+      
+  }else{
+      
   }
   return(fitness)
 }
 ```
 
+```{r fitness.test}
+layout1 <- list()
+layout2 <- list()
+for (i in 1:4){
+  layout1[[i]] <- c(1,1,1,1)
+  layout2[[i]] <- 0
+}
+vizualize_board(layout1, 4)
+fitness(layout = layout1, fitness_function = "binary", 4)
+vizualize_board(layout2, 4)
+fitness(layout = layout0, fitness_function = "binary", 4)
+```
 
 ### 5. 
 
