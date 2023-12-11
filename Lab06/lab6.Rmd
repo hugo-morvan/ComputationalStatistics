@@ -245,16 +245,50 @@ Define the function mutate() that randomly moves a queen to a new position.
 
 ```{r 1.3}
 #1.3
-mutate <- function(layout){
+mutate <- function(layout,n){
   
   #Given a chessboard layout, returns a layout with a randomly moved queen
   
   if(typeof(layout) == "list" & is.null(ncol(layout))){
     #BINARY 
     print("Mut: Binary rep detected")
-    #randomly flip a digit in a binary representation, and check if the new queen is not on another queen , and if it is not off the board
+    #randomly flip a digit in a binary representation, and if it is not off the board
+    #randomly select a 1 and change it to 0
+    zero_coords <- c()
+    for (i in 1:n){
+      for (j in 1:n){
+        if(layout[[i]][j] == 0){
+          zero_coords <- c(zero_coords, i)
+          zero_coords <- c(zero_coords, j)
+        }
+      }
+    }
     
+    rand_idx <- sample(length(zero_coords)/2, 1)
+    x0 <- zero_coords[rand_idx*2]
+    y0 <- zero_coords[rand_idx*2 + 1]
+    
+    one_coords <- c()
+    for (i in 1:n){
+      for (j in 1:n){
+        if(layout[[i]][j] == 1){
+          one_coords <- c(one_coords, i)
+          one_coords <- c(one_coords, j)
+        }
+      }
+    }
+    #randomly select a 1 and change it to 0
+    rand_idx <- sample(length(one_coords)/2, 1)
+    x1 <- one_coords[1]
+    y1 <- one_coords[2]
+    
+    new_layout <- layout
+    new_layout[[x0]][y0] <- 1
+    new_layout[[x1]][y1] <- 0
+    
+    #This approach has the risk of not changing the layout at all, but it is unlikely to happen as n get larger
     return(new_layout)
+    
   }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
     #SINGLES
     print("Mut: Singles rep detected")
@@ -272,13 +306,29 @@ mutate <- function(layout){
 }
 ```
 
+```{r 1.3.test}
+#Testing the mutate function for each representation
+#binary rep:
+layout1 <- list()
+layout1[[1]] <- c(0,0,0,0)
+layout1[[2]] <- c(0,1,0,0)
+layout1[[3]] <- c(0,0,0,0)
+layout1[[4]] <- c(0,0,0,0)
+vizualize_board(layout1, 4)
+mutated <- mutate(layout1, 4)
+vizualize_board(mutated, 4)
+#singles rep:
+
+#pairs rep:
+```
+
 ### 4. 
 
 Define a fitness function for a given configuration. 
 Experiment with three: 
-binary—is a solution or not;
-number of queens not attacked;
-( n2 -number) of pairs of queens attacking each other. 
+1) binary — is a solution or not;
+2) number of queens not attacked;
+3) (nC2 - number) of pairs of queens attacking each other. 
 If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. Try each fitness function for each encoding method. You should not expect the binary fitness function to work well, explain why this is so.
 
 ```{r 1.4}
