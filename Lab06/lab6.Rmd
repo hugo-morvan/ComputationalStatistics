@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Question 1: Genetic algorithm
@@ -324,7 +324,7 @@ layout1[[3]] <- c(0,0,0,0)
 layout1[[4]] <- c(0,0,0,0)
 vizualize_board(layout1, 4)
 mutated1 <- mutate(layout1, 4)
-vizualize_board(mutated, 4)
+vizualize_board(mutated1, 4)
 print("_____________________________")
 
 #singles rep:
@@ -538,7 +538,7 @@ Implement a genetic algorithm that takes the choice of encoding, mutation probab
 * (e) Do not forget to update the vector of fitness values of the population.
 * (f) Remember the number of pairs of queens attacking each other at the given iteration.
 
-```{r 1.5}
+```{r 1.5, eval=FALSE, include=TRUE}
 #1.5
 generate_random_layout <- function(n){
   layout <- list()
