@@ -96,4 +96,42 @@ var(jack_c)
 
 ## 5) 
 
-#
+################## LAB 6 ###########################à
+
+rm(list=ls(all.names = T))
+
+data <- read.csv2("censoredproc.csv")
+
+### 1)
+
+par(mfrow=c(1,3))
+
+# histogram of all data
+hist(as.numeric(data[,1]), freq=F)
+
+# histogram of data with cens=1
+hist(as.numeric(data[which(data[,2]==1),1]), freq=F)
+
+# histogram of data with cens=2
+hist(as.numeric(data[which(data[,2]==2),1]), freq=F)
+
+min(as.numeric(data[which(data[,2]==1),1]))
+min(as.numeric(data[which(data[,2]==2),1]))
+
+### ANSWER: 
+# Yes, they both look like exponential distributions.
+
+### 2)
+
+max(as.numeric(data[which(data[,2]==1),1]))
+min(as.numeric(data[which(data[,2]==1),1]))
+
+max(as.numeric(data[which(data[,2]==2),1]))
+min(as.numeric(data[which(data[,2]==2),1]))
+
+library(ReIns)
+
+x <- seq(0,10, 0.01)
+plot(x, dexp(x-2,1), type="l")
+lines(x, dexp(x), col="red")
+
