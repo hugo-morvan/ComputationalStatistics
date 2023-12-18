@@ -4,7 +4,7 @@ author: "Hugo Morvan, Daniele Bozzoli"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -141,11 +141,11 @@ vizualize_board <- function(layout, n){
   }
 }
 # pairs
-# vizualize_board(pairs, 5)
+vizualize_board(pairs, 5)
 # binary
-# vizualize_board(binary, 5)
+vizualize_board(binary, 5)
 # row
-# vizualize_board(row ,5)
+vizualize_board(row ,5)
 ```
 
 ### 2. 
