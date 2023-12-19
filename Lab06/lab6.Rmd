@@ -607,6 +607,18 @@ fitness <- function(layout, fitness_function, n){
      }
     #to scale to [0,1], we can divide by the max number of queens that can be safe
     fitness <- safe
+  }else if(fitness_function == "num_attacking"){
+    num_attacking <- 0
+    for(queen in 1:((length(points)/2)-1)){
+      for(other_queen in (queen+1):(length(points)/2)){
+        Q1 <- c(points[1,queen], points[2,queen])
+        Q2 <- c(points[1,other_queen], points[2,other_queen])
+        if(are_attacking_eachother(Q1, Q2)){
+          num_attacking <- num_attacking + 1
+        }
+      } 
+    }
+    fitness <- num_attacking
   }else{
       #(nC2 - number) of pairs of queens attacking each other.
       nc2 <- (n*(n-1)/2)
@@ -682,7 +694,7 @@ darwin_pairs <- function(n_generations, board_size, n_population, mutprob, fitne
   }
   return(n_attacking_queens)
 }
-res_pairs <- darwin_pairs(100, 4, 10, 0.1, "num_safe")
+res_pairs <- darwin_pairs(n_generations = 100, board_size= 4, n_population = 10, mutprob = 0.1, fitness_function = "num_safe")
 ```
 
 ```{r}
