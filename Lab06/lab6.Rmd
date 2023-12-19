@@ -80,6 +80,7 @@ BinToDec <- function(x){
 vizualize_board <- function(layout, n){
   #Given a layout, vizualizes the board
   if(typeof(layout) == "list" & is.null(ncol(layout))){
+    print("Binary")
     #Binary
     board <- matrix(nrow = n, ncol = n)
     #fill the board with 0s
@@ -94,10 +95,12 @@ vizualize_board <- function(layout, n){
     board <- t(board)
     #print(board)
   }else if(typeof(layout) == "integer" & is.null(ncol(layout))){
+    print("Singles")
     #Singles
     #fill the board with 0s
-    for (i in 1:nrow(board)){
-      for (j in 1:ncol(board)){
+    board <- matrix(nrow = n, ncol = n)
+    for (i in 1:n){
+      for (j in 1:n){
         board[i,j] <- 0
       }
     }
@@ -344,6 +347,9 @@ Experiment with three:
 If needed scale the value of the fitness function to [0, 1]. Experiment which could be the best one. 
 Try each fitness function for each encoding method. 
 You should not expect the binary fitness function to work well, explain why this is so.
+
+-> The binary function does not work well because it only returns 0 if a solution has been found, and 1 otherwise.
+This is very unlikely to happen, especially on the first iterations, so the algorithm will not be able to make any progress towards the solution, it will just wonder around randomly.
 
 ```{r 1.4}
 #1.1.4
@@ -703,8 +709,6 @@ plot(res_pairs, type="l", xlab="Generation", ylab="Number of attacking queens")
 
 ```{r Binary Representation}
 ################### Binary Representation ###################
-
-    
 crossover <- function(layout1, layout2, p){
   #p < log2(n)/2
   kid <- list()
@@ -850,7 +854,7 @@ darwin_bin <- function(n_generations, board_size, n_population, mutprob, fitness
     fitnesses[i] <- fitness(population[[i]], fitness_function, board_size)
   }
   n_attacking_queens <- c()
-
+  solutions <- list()
   ###### Genetic Algorithm ######
   for(generation in 1:n_generations){
     #Two individuals are randomly sampled from the current population, they are further used as parents
@@ -877,25 +881,223 @@ darwin_bin <- function(n_generations, board_size, n_population, mutprob, fitness
     attacking_queens <- 0
     for(i in 1:n_population){
       attacking_queens <- attacking_queens + fitness(population[[i]], "num_attacking", board_size)
+      if(fitness(population[[i]], "num_attacking", board_size) == 0){
+        solutions[[length(solutions)+1]] <- population[[i]]
+      }
     }
     n_attacking_queens <- c(n_attacking_queens, attacking_queens)
 
   }
-  return(n_attacking_queens)
+  return(list(n_attacking_queens = n_attacking_queens, solutions = solutions))
 }
-
-
 
 ```
 
 ```{r}
 res <- darwin_bin(50, 4, 10, 0.1, "num_safe")
+#res$n_attacking_queens
 ```
 
 ```{r}
-plot(res, type="l", xlab="Generation", ylab="Number of attacking queens")
+plot(res$n_attacking_queens, type="l", xlab="Generation", ylab="Number of attacking queens")
 ```
 
+```{r}
+vizualize_board(res$solutions[[5]], 4)
+length(res$solutions)
+```
+
+```{r Singles Representation}
+################### Singles Representation ###################
+
+    
+crossover <- function(layout1, layout2, p){
+  kid <- c()
+    for (i in 1:p){
+      kid <- c(kid , layout1[i])
+    }
+    for (i in (p+1):length(layout2)){
+      kid <- c(kid , layout2[i])
+    }
+    return(kid)
+}
+
+mutate <- function(layout,n){
+    row <- sample(n,1)
+    layout[row] <- sample(n,1)
+    #Disadvantages of this method : a queen can only be moved within a column, and it can also not be moved at all
+    return(layout)
+}
+
+fitness <- function(layout, fitness_function, n){
+  #Very twisted and inefficient way of doing things, to be modified
+  board <- matrix(nrow = n, ncol = n)
+  #fill the board with 0s
+  for (i in 1:n){
+    for (j in 1:n){
+      board[i,j] <- 0
+    }
+  }
+  for (i in 1:n){
+    board[i,layout[i]] <- 1
+  }
+  board <- t(board)
+  #================================================================================
+  #At this point, the board var should contain a matrix on the state of the board, with 1s for queens and 0s for empty spaces
+  #Convert the board to a list of coordinates 
+  my_vec <- c()
+  for(i in 1:n){
+    for(j in 1:n){
+      if(board[i,j]==1){
+        my_vec <- c(my_vec, c(i,j))
+      }
+    }
+  }
+  if(length(my_vec) == 0){
+    return(0)
+  }
+  points<-array( my_vec, dim=c(2,length(my_vec)/2))
+  are_attacking_eachother <- function(Q1,Q2){
+    #https://stackoverflow.com/questions/57239548/how-to-check-if-a-queen-is-under-attack-in-nqueens
+    (Q1[1] == Q2[1] | Q1[2] == Q2[2] | Q1[1]-Q1[2] == Q2[1]-Q2[2] | Q1[1]+Q1[2] == Q2[1]+Q2[2])
+  }
+  fitness <- 0
+  #If only one queen on the board:
+  if(length(points)/2 <= 1){
+    if(fitness_function == "binary"){
+      return(0)
+    }else if(fitness_function == "num_safe"){
+      return(length(points)/2)
+    }else{ #number of attacking pairs
+      return(0)
+    }
+  }else if(fitness_function == "binary"){
+      for(queen in 1:((length(points)/2)-1)){
+        for(other_queen in (queen+1):(length(points)/2)){
+          Q1 <- c(points[1,queen], points[2,queen])
+          Q2 <- c(points[1,other_queen], points[2,other_queen])
+          if(are_attacking_eachother(Q1, Q2)){
+            fitness <- 1
+          }
+        } 
+      }
+  }else if(fitness_function == "num_safe"){
+    safe <- 0
+     for(queen in 1:((length(points)/2)-1)){
+        for(other_queen in (queen+1):(length(points)/2)){
+          Q1 <- c(points[1,queen], points[2,queen])
+          Q2 <- c(points[1,other_queen], points[2,other_queen])
+          if(!are_attacking_eachother(Q1, Q2)){
+            safe <- safe + 2
+          }
+        } 
+     }
+    #to scale to [0,1], we can divide by the max number of queens that can be safe
+    fitness <- safe
+  }else if(fitness_function == "num_attacking"){
+    num_attacking <- 0
+    for(queen in 1:((length(points)/2)-1)){
+      for(other_queen in (queen+1):(length(points)/2)){
+        Q1 <- c(points[1,queen], points[2,queen])
+        Q2 <- c(points[1,other_queen], points[2,other_queen])
+        if(are_attacking_eachother(Q1, Q2)){
+          num_attacking <- num_attacking + 1
+        }
+      } 
+    }
+    fitness <- num_attacking
+  }else{
+      #(nC2 - number) of pairs of queens attacking each other.
+      nc2 <- (n*(n-1)/2)
+      num_attacking <- 0
+      for(queen in 1:((length(points)/2)-1)){
+        for(other_queen in (queen+1):(length(points)/2)){
+          Q1 <- c(points[1,queen], points[2,queen])
+          Q2 <- c(points[1,other_queen], points[2,other_queen])
+          if(are_attacking_eachother(Q1, Q2)){
+            fitness <- 1
+          }
+        } 
+      }
+      fitness <- nc2 - num_attacking
+  }
+  return(fitness)
+}
+
+
+generate_random_layout_singles <- function(n){
+  layout <- c()
+  for (i in 1:n){
+    layout[i] <- sample(1:n,1)
+  }
+  return(layout)
+}
+
+darwin_singles <- function(n_generations, board_size, n_population, mutprob, fitness_function){
+
+  #generate random population
+  population <- list()
+  for(i in 1:n_population){
+    population[[i]] <- generate_random_layout_singles(board_size)
+  }
+
+  #calculate fitness of population
+  fitnesses <- c()
+  for(i in 1:n_population){
+    fitnesses[i] <- fitness(population[[i]], fitness_function, board_size)
+  }
+  n_attacking_queens <- c()
+  solutions <- list()
+  ###### Genetic Algorithm ######
+  for(generation in 1:n_generations){
+    #Two individuals are randomly sampled from the current population, they are further used as parents
+    parents <- sample(population, 2, replace = FALSE)
+
+    #One individual with the smallest fitness is selected from the current population, this will be the victim
+    victim <- population[which.min(fitnesses)][[1]]
+    victim_idx <- which.min(fitnesses)
+
+    #The two sampled parents are to produce a kid by crossover
+    kid <- crossover(parents[[1]], parents[[2]], p=2)
+    #this kid should be mutated with probability mutprob
+    if(runif(1) < mutprob){
+      kid <- mutate(kid, 4)
+    }
+    #The victim is replaced by the kid in the population
+  
+    population[[victim_idx]] <- kid
+
+    #Do not forget to update the vector of fitness values of the population
+    fitnesses[victim_idx] <- fitness(kid, fitness_function, board_size)
+
+  #Remember the number of pairs of queens attacking each other at the given iteration
+    attacking_queens <- 0
+    for(i in 1:n_population){
+      attacking_queens <- attacking_queens + fitness(population[[i]], "num_attacking", board_size)
+      if(fitness(population[[i]], "num_attacking", board_size) == 0){
+        solutions[[length(solutions)+1]] <- population[[i]]
+      }
+    }
+    n_attacking_queens <- c(n_attacking_queens, attacking_queens)
+
+  }
+  return(list(n_attacking_queens = n_attacking_queens, solutions = solutions))
+}
+
+```
+
+```{r}
+res_sin <- darwin_singles(100, 4, 100, 0.1, "num_safe")
+```
+
+```{r}
+plot(res_sin$n_attacking_queens, type = "l", xlab = "Generation", ylab = "Number of attacking queens")
+```
+
+```{r}
+length(res_sin$solutions)
+vizualize_board(res_sin$solutions[[1]], 4)
+```
 
 
 Implement a genetic algorithm that takes the choice of encoding, mutation probability, and fitness function as parameters. Your implementation should start with a random initial configuration. Each element of the population should have its fitness calculated. Do not forget to have in your code a limit for the number of iterations (but this limit should not be lower than 100, unless this causes running time issues, which should be clearly presented then), so that your code does not run forever. Count the number of pairs of queens attacking each other. At each iteration :
