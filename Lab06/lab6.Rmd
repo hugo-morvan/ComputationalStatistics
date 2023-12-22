@@ -968,9 +968,13 @@ Yes, they both look like exponential distributions.
 
 Assume that the underlying data comes from an exponential distribution with parameter $\lambda$. This means that observed values come from the exponential $\lambda$ distribution, while censored from a truncated exponential distribution. Write down the likelihood function.
 
-```{r 2.2}
-# 2.2
-```
+Let's now assume that all uncensored observations are exponentially distributed with density $f(x) = \lambda e^{-\lambda x}$, and let's also assume (although it is very unlikely to be the case, looking at the previous histograms) that censored data are following a truncated exponential distribution.
+Let's try compute the likelihood of our data. With the previous assumptions, it is reasonable to say that the truncated exponential distribution limits the original exponential distribution to the interval $[a, b]$ with $0 <a \leq b$. Furthermore we add a dummy variable $\gamma_i$ that is equal to 0 if the observation $x_i$ is uncensored and is equal to 1 if it is censored.
+
+Likelihood function:
+
+$$L(\lambda) = \prod_{i=1}^n f(x_i)^{(1-\gamma_i)} \cdot \Bigg( \frac{f(x_i)}{F(b) - F(a)} \Bigg) ^{\gamma_i}$$.
+
 
 ### 3. 
 
