@@ -242,15 +242,21 @@ fit2 <- function(c, data){
   data$new <- rep(0,110)
   for (i in 1:nrow(data)){
     if (data[i,2] > c) data[i,5] <- data[i,2] - c
-    else data[i,5] <- 0
   }
-  lm2 <- lm(Price ~ SqFt + new, data)
+  lm2 <- lm(Price ~ SqFt + new, data=data)
   sum(lm2$residuals^2)
 }
 
-RSS_opt <- optim(2000, fit2, data=data, method="L-BFGS-B", lower=0, upper=4500)
-RSS_opt$par
+RSS_opt <- optim(2000, fit2, data=data, method="Brent", lower=0, upper=4500)
+c2 <- RSS_opt$par # new c parameter found with optimizer
 RSS_opt$value
+
+data$new <- rep(0,110)
+for (i in 1:nrow(data)){
+  if (data[i,2] > c2) data[i,5] <- data[i,2] - c2
+}
+lm3 <- lm(Price ~ SqFt + new, data=data)
+sum(lm3$residuals^2) # better RSS
 ```
 
 ## 3.
@@ -260,33 +266,36 @@ Using the bootstrap estimate the distribution of c. Determine the bootstrap bias
 (Hint: use boot(),boot.ci(),plot.boot(),print.bootci())
 
 ```{r 2.3}
+## 3)
 library(boot)
 
-c_val <- c()
+c_values <- c()
 
-for (i in 1:200){ #2000 takes too long to run on my poor laptop
+for (i in 1:2E4){
   if (i%%500==0) cat(i, "\r")
   id <- sample(1:110, 110, replace = TRUE)
   data_boot <- data[id,]
-  c_opt <- optim(2000, fit2, data=data_boot, method="L-BFGS-B", lower=0, upper=4500)   
-  c_val <<- c(c_val, c_opt$par)
+  c_optimizer <- optim(2000, fit2, data=data_boot, method="Brent", lower=0, upper=4000)   
+  c_values <<- c(c_values, c_optimizer$par)
 }
 
-hist(c_val)
-
-2 * RSS_opt$par - sum(c_val) / 2000      # bootstrap bias-correction
-sum((c_val - mean(c_val))^2) / (2000-1)  # variance of c
+hist(c_values)
+2 * RSS_opt$par - sum(c_values) / 2E4            # bootstrap bias-correction
+sum((c_values - mean(c_values))^2) / (2E4 - 1)     # bootstrap variance of c
 
 opt_boot <- function(data, id){
-  id <- sample(1:110, 110, replace = TRUE)
   data_boot2 <- data[id,]
-  c_opt2 <- optim(2000, fit2, data= data_boot2, method = "L-BFGS-B", lower = 0, upper = 4500)   
-  c_opt2$par
+  c_optimizer2 <- optim(2000, fit2, data= data_boot2, method = "Brent", lower = 0, upper = 4000)   
+  c_optimizer2$par
 }
 
-boot_fun <- boot(data = data, opt_boot, R = 2E3)
-boot.ci(boot_fun)
+boot_fun <- boot(data=data, opt_boot, R=2E4)
 plot(boot_fun)
+
+c_1 <- boot_fun$t         # c value cosidering bootstrap sample
+c_2 <- boot_fun$t0        # c value considering whole dataset
+
+boot.ci(boot_fun)         # confidence intervals
 ```
 
 We seem to obtain two Gaussian-ish shaped distributions as the distribution of the optimization values.
@@ -296,37 +305,45 @@ We seem to obtain two Gaussian-ish shaped distributions as the distribution of t
 Estimate the variance of c using the jackknife and compare it with the bootstrap estimate.
 
 ```{r 2.4}
+## 4)
+jack_c <- c()  # jackknife c values
 
-jack_c <-c()
-
-# new function for the jackknife function with 109 rows instead of 110
+# new function for the jackknife with 109 rows instead of 110
 fit3 <- function(c, data){
   data$new <- rep(0,109)
   for (i in 1:nrow(data)){
     if (data[i,2] > c) data[i,5] <- data[i,2] - c
-    else data[i,5] <- 0
   }
-  lm2 <- lm(Price ~ SqFt + new, data)
+  lm2 <- lm(Price ~ SqFt + new, data=data)
   sum(lm2$residuals^2)
 }
 
 for (i in 1:110){
-  id <- sample(1:110, 110, replace = TRUE)
-  data_boot3 <- data[id,]
-  data_jack <- data_boot3[-i,]
-  c_opt <- optim(2000, fit3, data=data_jack, method = "L-BFGS-B", lower = 0, upper = 4500)   
-  jack_c <<- c(jack_c, c_opt$par)
+  # id <- sample(1:110, 110, replace = TRUE)
+  # data_boot3 <- data[id,]
+  data_jack <- data[-i,]
+  c_optimizer <- optim(2000, fit3, data=data_jack, method = "Brent", lower = 0, upper = 4000)   
+  jack_c <<- c(jack_c, c_optimizer$par)
 }
 
-jack_c
-var(jack_c)
+n <- nrow(data)
+sum((n*c_2 - (n-1)*(jack_c) - sum(jack_c)/n) ^2) / (n*(n-1)) #jackknife var
+sum((c_values - mean(c_values))^2) / (2E4-1)     # bootstrap variance of c
 ```
-
-(The values we obtain are not accurate, we will wait for feedback to understand what we did wrong.)
 
 ## 5.
 
 Summarize the results of your investigation by comparing all of the confidence intervals with respect to their length and the location of c inside them.
+
+```{r 2.5}
+## 5)
+boot.ci(boot_fun)
+```
+
+Looking at the outcome of the analysis, we notice how the BCa and Percentile
+95% confidence interval are the most similar, and furthermore the littlests,
+meanwhile the Normal CI gives us the largest interval. Basic CI results similar
+to Normal CI, with higher left interval value e smaller right value.
 
 # Appendix
 
