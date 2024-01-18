@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: pdf_document
 editor_options: 
   chunk_output_type: inline
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +14,6 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Question 1: Genetic algorithm
-
 
 ```{r vizualize function}
 BinToDec <- function(x){
@@ -277,7 +278,7 @@ darwin_pairs <- function(n_generations, board_size, n_population, mutprob, fitne
 
 ```
 
-### 6. 
+### 6.
 
 If found, return the legal configuration of queens.
 
@@ -297,10 +298,10 @@ if(length(res_pairs$solutions) > 0){
 }
 ```
 
+### 7.
 
-### 7. 
-
-Provide a plot of the number of pairs queens attacking each other at each iteration of the algorithm.
+Provide a plot of the number of pairs queens attacking each other at
+each iteration of the algorithm.
 
 ```{r pairs.7}
 # Question 7 : Plot
@@ -504,7 +505,7 @@ darwin_bin <- function(n_generations, board_size, n_population, mutprob, fitness
 
 ```
 
-### 6. 
+### 6.
 
 If found, return the legal configuration of queens.
 
@@ -524,10 +525,10 @@ if(length(res_bin$solutions) > 0){
 }
 ```
 
+### 7.
 
-### 7. 
-
-Provide a plot of the number of pairs queens attacking each other at each iteration of the algorithm.
+Provide a plot of the number of pairs queens attacking each other at
+each iteration of the algorithm.
 
 ```{r bin.7}
 # Question 7 : Plot
@@ -535,7 +536,6 @@ plot(res_bin$n_attacking_queens, type="l", xlab="Generation", ylab="Number of at
 title("Number of attacking queens at each generation on a 4x4 board \n (binary encoding)")
 
 ```
-
 
 ## Singles Encoding
 
@@ -723,7 +723,7 @@ darwin_singles <- function(n_generations, board_size, n_population, mutprob, fit
 
 ```
 
-### 6. 
+### 6.
 
 If found, return the legal configuration of queens.
 
@@ -743,9 +743,10 @@ if(length(res_sin$solutions) > 0){
 }
 ```
 
-### 7. 
+### 7.
 
-Provide a plot of the number of pairs queens attacking each other at each iteration of the algorithm.
+Provide a plot of the number of pairs queens attacking each other at
+each iteration of the algorithm.
 
 ```{r sin.7}
 # Question 7 : Plot
@@ -753,11 +754,12 @@ plot(res_sin$n_attacking_queens, type = "l", xlab = "Generation", ylab = "Number
 title("Number of attacking queens at each generation on a 4x4 board \n (singles encoding)")
 ```
 
-### 8. 
+### 8.
 
-Run your code for n = 4, 8, 16 , the different encodings, objective functions, and mutprob= 0.1, 0.5, 0.9. Did you find a legal state?
+Run your code for n = 4, 8, 16 , the different encodings, objective
+functions, and mutprob= 0.1, 0.5, 0.9. Did you find a legal state?
 
-### Testing Different board sizes : 
+### Testing Different board sizes :
 
 ```{r 1.8.n}
 
@@ -814,7 +816,7 @@ title("Number of attacking queens at each generation on a 16x16 board \n (single
 
 ```
 
-### Testing Different fitness functions : 
+### Testing Different fitness functions :
 
 ```{r 1.8.fitness}
 
@@ -871,7 +873,7 @@ title("Number of attacking queens at each generation on a 8x8 board \n (nC2 - nu
 
 ```
 
-### Testing Different mutation probabilities : 
+### Testing Different mutation probabilities :
 
 ```{r 1.8.mutation}
 
@@ -927,21 +929,37 @@ plot(res_sinC$n_attacking_queens, type = "l", xlab = "Generation", ylab = "Numbe
 title("Number of attacking queens at each generation on a 8x8 board \n (mutprob= 0.9)")
 
 ```
-The mutation probability seems the affect the "smoothness" of the graph. This is probably due to the fact that improvement is made when a new (good) layout is introduced into the population, and this is more likely to happen when the mutation probability is higher.
 
-### 9. 
+The mutation probability seems the affect the "smoothness" of the graph.
+This is probably due to the fact that improvement is made when a new
+(good) layout is introduced into the population, and this is more likely
+to happen when the mutation probability is higher.
+
+### 9.
 
 Discuss which encoding and objective function worked best.
 
-The way we coded this assignment, the singles encoding seems to be working the best as it shows the most consistent improvement over the generations. The binary encoding, although computationally friendlier, shows a more erratic behavior. The pairs encoding is flawed by nature because it introduces unwanted behaviors.
-The number of safe queens fitness function seems to be the best one in our case. The binary fitness function is not good at all because it does not give any information about the quality of a solution, which is necessary for the genetic algorithm to perform well. The nC2 - num_attacking fitness function did not seem to work well, but it could be due to a design problem in our fitness function. 
+The way we coded this assignment, the singles encoding seems to be
+working the best as it shows the most consistent improvement over the
+generations. The binary encoding, although computationally friendlier,
+shows a more erratic behavior. The pairs encoding is flawed by nature
+because it introduces unwanted behaviors. The number of safe queens
+fitness function seems to be the best one in our case. The binary
+fitness function is not good at all because it does not give any
+information about the quality of a solution, which is necessary for the
+genetic algorithm to perform well. The nC2 - num_attacking fitness
+function did not seem to work well, but it could be due to a design
+problem in our fitness function.
 
-________________
+------------------------------------------------------------------------
+
 # Question 2: EM algorithm
 
-### 1. 
+### 1.
 
-Plot a histogram of the values. Do it for all of the data, and also when the censored observations are removed. Do the histograms remind of an exponential distribution?
+Plot a histogram of the values. Do it for all of the data, and also when
+the censored observations are removed. Do the histograms remind of an
+exponential distribution?
 
 ```{r 2.1}
 # 2.1
@@ -962,56 +980,75 @@ min(as.numeric(data[which(data[,2]==1),1]))
 min(as.numeric(data[which(data[,2]==2),1]))
 
 ```
+
 Yes, they both look like exponential distributions.
 
-### 2. 
+### 2.
 
-> Assume that the underlying data comes from an exponential distribution with parameter $\lambda$. This means that observed values come from the exponential $\lambda$ distribution, while censored from a truncated exponential distribution. Write down the likelihood function.
+ Assume that the underlying data comes from an exponential distribution
+ with parameter $\lambda$. This means that observed values come from
+the exponential $\lambda$ distribution, while censored from a
+truncated exponential distribution. Write down the likelihood
+function.
 
---------------------------------------------------------------------------
-The Exponential Distribution Function has the following density function:
-$$f(x,\lambda) = \lambda e^{-\lambda x}$$ for $x \geq 0$ and $\lambda > 0$.
-and has the following cumulative distribution function:
-$$F(x,\lambda) =  P(X\leq x)= 1 - e^{-\lambda x}$$ for $x \geq 0$ and $\lambda > 0$.
-The Truncated Exponential Distribution Function truncated on the left at c has the following density function:
-$$f(y|c,\lambda) = \frac{\lambda e^{-\lambda y}}{1 -\lambda e^{-\lambda c}}$$ for $\lambda > 0$ and $0 < y \leq c$. (Source Al-Athari 2008)
 
-$$F_{y \leq c}(Y) = P(Y \leq y | X \leq c) = \frac{P(Y \leq y , Y \leq c)}{P( Y \leq c)}= \frac{P(Y \leq y )}{P( Y \leq c)}$$ 
+The Exponential Distribution Function has the following density function: 
+$$f(x,\lambda) = \lambda e^{-\lambda x}$$ for $x \geq 0$ and $\lambda > 0$. 
+ 
+and has the following cumulative distribution function: 
+$$F(x,\lambda) =  P(X\leq x)= 1 - e^{-\lambda x}$$ 
+for $x \geq 0$ and $\lambda > 0$. 
+ 
+The Truncated Exponential Distribution Function truncated on the left at c has the following density function: 
+$$f(y|c,\lambda) = \frac{\lambda e^{-\lambda y}}{1 -\lambda e^{-\lambda c}}$$ 
+for $\lambda > 0$ and $0 < y \leq c$. (Source Al-Athari 2008) 
+ 
+To find the CUmulative distribution function, we use the following property derived in class: 
+$$F_{y \leq c}(Y) = P(Y \leq y | X \leq c) = \frac{P(Y \leq y , Y \leq c)}{P( Y \leq c)}= \frac{P(Y \leq y )}{P( Y \leq c)}$$
+Therefore the Truncated Exponential Distribution Function truncated on the left at c has the following cumulative distribution function:                                            
 
-Therefore the Truncated Exponential Distribution Function truncated on the left at c has the following cumulative distribution function:
-
-$$F_{y \leq c}(Y) = P(Y \leq y | Y \leq c) = \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$
-Since $F_{XY}(x,y)=xy$, the combined CDF of the exponential distribution and the truncated exponential distribution is:
-$$F_{x,y\leq c}(X,Y \leq c, \lambda) = P(X\leq x) * P(Y \leq y | Y \leq c) = 1 - e^{-\lambda x} * \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$
-It follows that the likelihood function is:
-
-$$L_{x,y \leq c}(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} * \prod_{j=1}^m \frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}$$
-and the log-likelihood function is:
-
+$$F_{y \leq c}(Y) = P(Y \leq y | Y \leq c) = \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$ 
+Since $F_{XY}(x,y)=xy$, the combined CDF of the exponential distribution and the truncated exponential distribution is: 
+$$F_{x,y\leq c}(X,Y \leq c, \lambda) = P(X\leq x) * P(Y \leq y | Y \leq c) = 1 - e^{-\lambda x} * \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$ 
+It follows that the likelihood function is:                                                
+$$L_{x,y \leq c}(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} * \prod_{j=1}^m \frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}$$ 
+and the log-likelihood function is:                                                        
 $$log L_{x,y \leq c}(\lambda) = \sum_{i=1}^n log(\lambda e^{-\lambda x_i}) + \sum_{j=1}^m log(\frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}) $$ 
 $$ = n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda - \lambda \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda c_j})$$
-### 3.
+
+### 3. 
 
 $$Q(\lambda, \lambda^k) = E[log L_{x,y \leq c}(\lambda|X, Y) | \lambda^k,X]$$ 
-$$ = E[n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda^k - \lambda^k \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})]$$
-$$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda^k - \lambda^k E[\sum_{j=1}^m y_j] - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$
+$$ = E[n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda^k - \lambda^k \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})]$$ 
+$$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda^k - \lambda^k E[\sum_{j=1}^m y_j] - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
 $$ = n \log\lambda-n + m \log \lambda^k - \lambda^k m(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}) - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
-since $E[\sum_{i=1}^n x_i] = n/\lambda$ and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}$ (Source : Al-Athari 2008).
+since $E[\sum_{i=1}^n x_i] = n/\lambda$ and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1})$ (Source : Al-Athari 2008). where $\lambda^k$ is the current estimate of $\lambda$.
 
-where $\lambda^k$ is the current estimate of $\lambda$.
 
-----------------------------------------------------
-Let's now assume that all uncensored observations are exponentially distributed with density $f(x) = \lambda e^{-\lambda x}$, and let's also assume (although it is very unlikely to be the case, looking at the previous histograms) that censored data are following a truncated exponential distribution.
-Let's try compute the likelihood of our data. With the previous assumptions, it is reasonable to say that the truncated exponential distribution limits the original exponential distribution to the interval $[a, b]$ with $0 <a \leq b$. Furthermore we add a dummy variable $\gamma_i$ that is equal to 0 if the observation $x_i$ is uncensored and is equal to 1 if it is censored.
+Old stuff:
+
+Let's now assume that all uncensored observations are exponentially
+distributed with density $f(x) = \lambda e^{-\lambda x}$, and let's also
+assume (although it is very unlikely to be the case, looking at the
+previous histograms) that censored data are following a truncated
+exponential distribution. Let's try compute the likelihood of our data.
+With the previous assumptions, it is reasonable to say that the
+truncated exponential distribution limits the original exponential
+distribution to the interval $[a, b]$ with $0 <a \leq b$. Furthermore we
+add a dummy variable $\gamma_i$ that is equal to 0 if the observation
+$x_i$ is uncensored and is equal to 1 if it is censored.
 
 Likelihood function:
 
 $$L(\lambda) = \prod_{i=1}^n f(x_i)^{(1-\gamma_i)} \cdot \Bigg( \frac{f(x_i)}{F(b) - F(a)} \Bigg) ^{\gamma_i}$$.
 
+### 3.
 
-### 3. 
-
-The goal now is to derive an EM algorithm that estimates $\lambda$. Based on the above found likelihood function, derive the EM algorithm for estimating $\lambda$. The formula in the M –step can be differentiated, but the derivative is non–linear in terms of $\lambda$ so its zero might need to be found numerically.
+The goal now is to derive an EM algorithm that estimates $\lambda$.
+Based on the above found likelihood function, derive the EM algorithm
+for estimating $\lambda$. The formula in the M --step can be
+differentiated, but the derivative is non--linear in terms of $\lambda$
+so its zero might need to be found numerically.
 
 ```{r 2.3}
 #2.3
@@ -1019,29 +1056,53 @@ The goal now is to derive an EM algorithm that estimates $\lambda$. Based on the
 
 ```
 
-### 4. 
+### 4.
 
-Implement the above in R. Take $\lambda_0 = 100$ as the starting value for the algorithm and stopping condition if the change in the estimate is less than 0.001. At what $\hat\lambda$ did the EM algorithm stop at? How many iterations were required?
+Implement the above in R. Take $\lambda_0 = 100$ as the starting value
+for the algorithm and stopping condition if the change in the estimate
+is less than 0.001. At what $\hat\lambda$ did the EM algorithm stop at?
+How many iterations were required?
 
 ```{r 2.4}
 #2.4
 ```
 
-### 5. 
+### 5.
 
-Plot the density curve of the $exp(\hat\lambda)$ distribution over your histograms in task 1.
+Plot the density curve of the $exp(\hat\lambda)$ distribution over your
+histograms in task 1.
 
 ```{r 2.5}
 #2.5
 ```
 
-### 6. 
+### 6.
 
-Study how good your EM algorithm is compared to usual maximum likelihood estimation with data reduced to only the uncensored observations. To this end we will use a parametric bootstrap. Repeat 1000 (reduce if computational time is too long—but carefully report the running times) times the following procedure:
+Study how good your EM algorithm is compared to usual maximum likelihood
+estimation with data reduced to only the uncensored observations. To
+this end we will use a parametric bootstrap. Repeat 1000 (reduce if
+computational time is too long---but carefully report the running times)
+times the following procedure:
 
-* (a) Simulate the same number of data points as in the original data, from the exponential $\hat\lambda$ distribution.
-* (b) Randomly select the same number of points as in the original data for censoring. For each observation for censoring—sample a new time from the uniform distribution on [0, true time]. Remember that the observation was censored.
-* (c) Estimate $\lambda$ both by your EM-algorithm, and maximum likelihood based on the uncensored observations. Compare the distributions of the estimates of $\lambda$ from the two methods. Plot the histograms, report whether they both seem unbiased, and what is the variance of the estimators.
+-   
+
+    (a) Simulate the same number of data points as in the original data,
+        from the exponential $\hat\lambda$ distribution.
+
+-   
+
+    (b) Randomly select the same number of points as in the original
+        data for censoring. For each observation for censoring---sample
+        a new time from the uniform distribution on [0, true time].
+        Remember that the observation was censored.
+
+-   
+
+    (c) Estimate $\lambda$ both by your EM-algorithm, and maximum
+        likelihood based on the uncensored observations. Compare the
+        distributions of the estimates of $\lambda$ from the two
+        methods. Plot the histograms, report whether they both seem
+        unbiased, and what is the variance of the estimators.
 
 ```{r 2.6}
 #2.6
