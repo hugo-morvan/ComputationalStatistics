@@ -4,7 +4,7 @@ author: "Hugo Morvan, Daniele Bozzoli"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
   markdown: 
     wrap: 72
 ---
@@ -1003,7 +1003,7 @@ The Truncated Exponential Distribution Function truncated on the left at c has t
 $$f(y|c,\lambda) = \frac{\lambda e^{-\lambda y}}{1 -\lambda e^{-\lambda c}}$$ 
 for $\lambda > 0$ and $0 < y \leq c$. (Source Al-Athari 2008) 
  
-To find the CUmulative distribution function, we use the following property derived in class: 
+To find the Cumulative distribution function, we use the following property derived in class: 
 $$F_{y \leq c}(Y) = P(Y \leq y | X \leq c) = \frac{P(Y \leq y , Y \leq c)}{P( Y \leq c)}= \frac{P(Y \leq y )}{P( Y \leq c)}$$
 Therefore the Truncated Exponential Distribution Function truncated on the left at c has the following cumulative distribution function:                                            
 
@@ -1024,38 +1024,6 @@ $$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda^k - \lambda^k E[
 $$ = n \log\lambda-n + m \log \lambda^k - \lambda^k m(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}) - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
 since $E[\sum_{i=1}^n x_i] = n/\lambda$ and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1})$ (Source : Al-Athari 2008). where $\lambda^k$ is the current estimate of $\lambda$.
 
-
-Old stuff:
-
-Let's now assume that all uncensored observations are exponentially
-distributed with density $f(x) = \lambda e^{-\lambda x}$, and let's also
-assume (although it is very unlikely to be the case, looking at the
-previous histograms) that censored data are following a truncated
-exponential distribution. Let's try compute the likelihood of our data.
-With the previous assumptions, it is reasonable to say that the
-truncated exponential distribution limits the original exponential
-distribution to the interval $[a, b]$ with $0 <a \leq b$. Furthermore we
-add a dummy variable $\gamma_i$ that is equal to 0 if the observation
-$x_i$ is uncensored and is equal to 1 if it is censored.
-
-Likelihood function:
-
-$$L(\lambda) = \prod_{i=1}^n f(x_i)^{(1-\gamma_i)} \cdot \Bigg( \frac{f(x_i)}{F(b) - F(a)} \Bigg) ^{\gamma_i}$$.
-
-### 3.
-
-The goal now is to derive an EM algorithm that estimates $\lambda$.
-Based on the above found likelihood function, derive the EM algorithm
-for estimating $\lambda$. The formula in the M --step can be
-differentiated, but the derivative is non--linear in terms of $\lambda$
-so its zero might need to be found numerically.
-
-```{r 2.3}
-#2.3
-
-
-```
-
 ### 4.
 
 Implement the above in R. Take $\lambda_0 = 100$ as the starting value
@@ -1064,7 +1032,41 @@ is less than 0.001. At what $\hat\lambda$ did the EM algorithm stop at?
 How many iterations were required?
 
 ```{r 2.4}
-#2.4
+# 2.4
+
+# uncensored and censored number of observations
+n <- length(which(data[,2]==1))
+m <- length(which(data[,2]==2))
+
+# uncensored and censored observations
+x <- as.numeric(data[which(data[,2]==1),1])
+z <- as.numeric(data[which(data[,2]==2),1])
+
+# starting lambda value and stopping condition
+lambda <- 100
+stop <- 0.001
+
+# EM algorithm
+E_loglik <- function(lambda){
+  (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda - z/(exp(lambda*z -1))) -
+    (sum(log(1-exp(-lambda*z))))
+}
+
+current_id <- 1
+max_id <- 1000
+L <- c(-Inf)
+
+while(current_id < max_id){
+  q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* xp(-lambda * z))
+  L <- c(L,Exp_llik(lambda)) # loglik
+  
+  if(abs(L[current_id+1] - L[current_id]) <=stop){
+    cat("Lambda found = ", lambda,"\nLog likelihood = " , L[current_id+1])
+    break
+  }
+  lambda <- optim(lambda, E_loglik, method="Brent")[[1]]
+  current_id <- current_id +1
+}
 ```
 
 ### 5.
@@ -1074,6 +1076,15 @@ histograms in task 1.
 
 ```{r 2.5}
 #2.5
+
+lambda <- # value
+
+hist(as.numeric(data[,1]), freq=F, main="Histogram of all data")
+lines(density(as.numeric(data[,1]), adjust = 1/lambda), lwd = 2)
+
+hist(as.numeric(data[which(data[,2]==1),1]), freq=F, main="Histogram of cens=1 data")
+lines(density(as.numeric(data[which(data[,2]==1),1]), adjust = 1/lambda), lwd = 2)
+
 ```
 
 ### 6.
