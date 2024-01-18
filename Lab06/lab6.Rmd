@@ -966,8 +966,41 @@ Yes, they both look like exponential distributions.
 
 ### 2. 
 
-Assume that the underlying data comes from an exponential distribution with parameter $\lambda$. This means that observed values come from the exponential $\lambda$ distribution, while censored from a truncated exponential distribution. Write down the likelihood function.
+> Assume that the underlying data comes from an exponential distribution with parameter $\lambda$. This means that observed values come from the exponential $\lambda$ distribution, while censored from a truncated exponential distribution. Write down the likelihood function.
 
+--------------------------------------------------------------------------
+The Exponential Distribution Function has the following density function:
+$$f(x,\lambda) = \lambda e^{-\lambda x}$$ for $x \geq 0$ and $\lambda > 0$.
+and has the following cumulative distribution function:
+$$F(x,\lambda) =  P(X\leq x)= 1 - e^{-\lambda x}$$ for $x \geq 0$ and $\lambda > 0$.
+The Truncated Exponential Distribution Function truncated on the left at c has the following density function:
+$$f(y|c,\lambda) = \frac{\lambda e^{-\lambda y}}{1 -\lambda e^{-\lambda c}}$$ for $\lambda > 0$ and $0 < y \leq c$. (Source Al-Athari 2008)
+
+$$F_{y \leq c}(Y) = P(Y \leq y | X \leq c) = \frac{P(Y \leq y , Y \leq c)}{P( Y \leq c)}= \frac{P(Y \leq y )}{P( Y \leq c)}$$ 
+
+Therefore the Truncated Exponential Distribution Function truncated on the left at c has the following cumulative distribution function:
+
+$$F_{y \leq c}(Y) = P(Y \leq y | Y \leq c) = \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$
+Since $F_{XY}(x,y)=xy$, the combined CDF of the exponential distribution and the truncated exponential distribution is:
+$$F_{x,y\leq c}(X,Y \leq c, \lambda) = P(X\leq x) * P(Y \leq y | Y \leq c) = 1 - e^{-\lambda x} * \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$
+It follows that the likelihood function is:
+
+$$L_{x,y \leq c}(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} * \prod_{j=1}^m \frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}$$
+and the log-likelihood function is:
+
+$$log L_{x,y \leq c}(\lambda) = \sum_{i=1}^n log(\lambda e^{-\lambda x_i}) + \sum_{j=1}^m log(\frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}) $$ 
+$$ = n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda - \lambda \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda c_j})$$
+### 3.
+
+$$Q(\lambda, \lambda^k) = E[log L_{x,y \leq c}(\lambda|X, Y) | \lambda^k,X]$$ 
+$$ = E[n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda^k - \lambda^k \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})]$$
+$$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda^k - \lambda^k E[\sum_{j=1}^m y_j] - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$
+$$ = n \log\lambda-n + m \log \lambda^k - \lambda^k m(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}) - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
+since $E[\sum_{i=1}^n x_i] = n/\lambda$ and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}$ (Source : Al-Athari 2008).
+
+where $\lambda^k$ is the current estimate of $\lambda$.
+
+----------------------------------------------------
 Let's now assume that all uncensored observations are exponentially distributed with density $f(x) = \lambda e^{-\lambda x}$, and let's also assume (although it is very unlikely to be the case, looking at the previous histograms) that censored data are following a truncated exponential distribution.
 Let's try compute the likelihood of our data. With the previous assumptions, it is reasonable to say that the truncated exponential distribution limits the original exponential distribution to the interval $[a, b]$ with $0 <a \leq b$. Furthermore we add a dummy variable $\gamma_i$ that is equal to 0 if the observation $x_i$ is uncensored and is equal to 1 if it is censored.
 
@@ -982,6 +1015,8 @@ The goal now is to derive an EM algorithm that estimates $\lambda$. Based on the
 
 ```{r 2.3}
 #2.3
+
+
 ```
 
 ### 4. 
