@@ -977,7 +977,7 @@ hist(as.numeric(data[which(data[,2]==1),1]), freq=F, main="Histogram of cens=1 d
 hist(as.numeric(data[which(data[,2]==2),1]), freq=F, main="Histogram of cens=2 data")
 
 min(as.numeric(data[which(data[,2]==1),1]))
-min(as.numeric(data[which(data[,2]==2),1]))
+max(as.numeric(data[which(data[,2]==2),1]))
 
 ```
 
@@ -1117,6 +1117,64 @@ times the following procedure:
 
 ```{r 2.6}
 #2.6
+
+bootstrap <- matrix(NA, ncol = 2, nrow = 1000)
+lambda_hat <- c()
+
+n <- 1000
+
+for (i in 1:n) {
+  bootstrap[,1] <- rexp(n, lambda)
+  bootstrap[,2] <- 1
+  bootstrap[1:m,1] <- runif(m, 0, max(as.numeric(data[which(data[,2]==2),1])))
+  bootstrap[1:m,2] <- 2
+  lambda_hat[i] <- n/sum(bootstrap[(m+1):n,1])
+}
+
+EM_lambda_hat  <- c()
+
+for(i in 1:1000){
+  # uncensored and censored number of observations
+  n <- length(which(bootstrap[,2]==1))
+  m <- length(which(bootstrap[,2]==2))
+
+  # uncensored and censored observations
+  x <- as.numeric(bootstrap[which(bootstrap[,2]==1),1])
+  z <- as.numeric(bootstrap[which(bootstrap[,2]==2),1])
+
+  # starting lambda value and stopping condition
+  lambda <- 100
+  stop <- 0.001
+
+  # EM algorithm
+  E_loglik <- function(lambda){
+    (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda - z/(exp(lambda*z -1))) -
+      (sum(log(1-exp(-lambda*z))))
+  }
+
+  current_id <- 1
+  max_id <- 1000
+  L <- c(-Inf)
+
+  while(current_id < max_id){
+    q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* xp(-lambda * z))
+    L <- c(L,Exp_llik(lambda)) # loglik
+  
+    if(abs(L[current_id+1] - L[current_id]) <=stop){
+      cat("Lambda found = ", lambda,"\nLog likelihood = " , L[current_id+1])
+      break
+    }
+    lambda <- optim(lambda, E_loglik, method="Brent")[[1]]
+    current_id <- current_id +1
+    EM_lambda_hat[i] <- lambda
+  }
+}
+
+hist(lambda_hat_mle)
+hist(lambda_hat_em)
+var(lambda_hat_mle)
+var(lambda_hat_em)
+
 
 ```
 
