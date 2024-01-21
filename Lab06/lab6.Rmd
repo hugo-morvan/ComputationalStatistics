@@ -1040,11 +1040,9 @@ How many iterations were required?
 # 2.4
 
 # EM algorithm
-get_Q <- function(lambda_k){
-  Q <- function(lambda){
-    n * log(lambda) - n + (m * log(lambda_k)) - lambda_k * m * ( 1/lambda_k) - (sum(log(1-exp(-lambda_k*z))))
-  }
-  return(Q)
+get_Q <- function(lambda){
+  n * log(lambda) - n + (m * log(lambda)) - lambda * m * (1/lambda) - 
+    (sum(log(1-exp(-lambda*z))))
 }
 
 ##################### Parameters #####################
@@ -1060,24 +1058,24 @@ z <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
 c <- 0 # truncation point, "the product had already failed when checked upon"
 
 # starting lambda value and stopping condition
-lambda_0 <- 100
+lambda <- 100
 epsilon <- 0.001 # stopping condition
 
 k <- 1 # iteration counter 
 max_k <- 100 # maximum number of iterations
-lambdas <- lambda_0 # vector of lambda values, starting with lambda_0
+lambdas <- lambda # vector of lambda values, starting with lambda_0
+L <- c(-Inf) # loglik vector for stopping condition
 
 ####################### EM Algorithm ##############################
 
 while(k < max_k){
-  lambda=1
-  lambdas[k+1] <- optimise(get_Q(lambdas[[k]]), interval = c(-100, 100), maximum = TRUE)$maximum
-  
-  if(abs(lambdas[[k]] - lambdas[[k+1]]) < epsilon){
-    print(paste("EM algorithm stopped at lambda =", lambdas[[k+1]], "after", k, "iterations"))
+  L <- c(L, get_Q(lambdas[k]))
+  if(abs(L[k+1] - L[k]) < epsilon ){
+    print(paste("EM algorithm stopped at lambda =", lambda, "after", k, "iterations"))
     break
   }
-  
+  lambda <- optim(lambda, get_Q, method="BFGS", control = list(fnscale=-1))[[1]]
+  lambdas <- c(lambdas, lambda)
   k <- k +1
 }
 
@@ -1159,34 +1157,37 @@ for(i in 1:1000){
 
   # starting lambda value and stopping condition
   lambda <- 100
-  stop <- 0.001
+  epsilon <- 0.001
 
   # EM algorithm
-  E_loglik <- function(lambda){
-    (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda - z/(exp(lambda*z -1))) -
+  get_Q <- function(lambda){
+    (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda) -
       (sum(log(1-exp(-lambda*z))))
   }
 
-  current_id <- 1
-  max_id <- 1000
-  L <- c(-Inf)
+  k <- 1
+  k_max <- 1000
+  L2 <- c(-Inf)
 
-  while(current_id < max_id){
-    q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* exp(-lambda * z))
-    L <- c(L,Exp_llik(lambda)) # loglik
-  
-    if(abs(L[current_id+1] - L[current_id]) <=stop){
-      cat("Lambda found = ", lambda,"\nLog likelihood = " , L[current_id+1])
+  while(k < k_max){
+    L2 <- c(L,get_Q(lambda)) # loglik
+    if(abs(L2[k+1] - L2[k]) < epsilon){
+      print(paste("EM algorithm stopped at lambda =", lambda, "after", 
+                  k, "iterations"))
       break
     }
-    lambda <- optim(lambda, E_loglik, method="Brent")[[1]]
-    current_id <- current_id +1
+    lambda <- optim(lambda, get_Q, method="Brent")[[1]]
+    k <- k +1
     EM_lambda_hat[i] <- lambda
   }
 }
 
+# lambda hat graphs
+par(mfrow=c(2,1))
 hist(lambda_hat_mle)
 hist(lambda_hat_em)
+
+# variances
 var(lambda_hat_mle)
 var(lambda_hat_em)
 
