@@ -4,13 +4,13 @@ author: "Hugo Morvan, Daniele Bozzoli"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
   markdown: 
     wrap: 72
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 ```
 
 # Question 1: Genetic algorithm
@@ -976,8 +976,13 @@ hist(as.numeric(data[which(data[,2]==1),1]), freq=F, main="Histogram of cens=1 d
 # histogram of data with cens=2
 hist(as.numeric(data[which(data[,2]==2),1]), freq=F, main="Histogram of cens=2 data")
 
+print("min")
 min(as.numeric(data[which(data[,2]==1),1]))
+min(as.numeric(data[which(data[,2]==2),1]))
+print("max")
+max(as.numeric(data[which(data[,2]==1),1]))
 max(as.numeric(data[which(data[,2]==2),1]))
+
 
 ```
 
@@ -1009,7 +1014,7 @@ Therefore the Truncated Exponential Distribution Function truncated on the left 
 
 $$F_{y \leq c}(Y) = P(Y \leq y | Y \leq c) = \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$ 
 Since $F_{XY}(x,y)=xy$, the combined CDF of the exponential distribution and the truncated exponential distribution is: 
-$$F_{x,y\leq c}(X,Y \leq c, \lambda) = P(X\leq x) * P(Y \leq y | Y \leq c) = 1 - e^{-\lambda x} * \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$ 
+$$F_{x,y\leq c}(X,Y \leq c, \lambda) = P(X\leq x) * P(Y \leq y | Y \leq c) = ( 1 - e^{-\lambda x}) * \frac{1- e^{-\lambda y}}{1 -e^{-\lambda c}}$$ 
 It follows that the likelihood function is:                                                
 $$L_{x,y \leq c}(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} * \prod_{j=1}^m \frac{\lambda e^{-\lambda y_j}}{1 -e^{-\lambda c_j}}$$ 
 and the log-likelihood function is:                                                        
@@ -1034,39 +1039,49 @@ How many iterations were required?
 ```{r 2.4}
 # 2.4
 
+# EM algorithm
+get_Q <- function(lambda_k){
+  Q <- function(lambda){
+    n * log(lambda) - n + (m * log(lambda_k)) - lambda_k * m * ( 1/lambda_k) - (sum(log(1-exp(-lambda_k*z))))
+  }
+  return(Q)
+}
+
+##################### Parameters #####################
+
 # uncensored and censored number of observations
 n <- length(which(data[,2]==1))
 m <- length(which(data[,2]==2))
 
 # uncensored and censored observations
-x <- as.numeric(data[which(data[,2]==1),1])
-z <- as.numeric(data[which(data[,2]==2),1])
+x <- as.numeric(data[which(data[,2]==1),1]) #Uncensored observations
+z <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
+
+c <- 0 # truncation point, "the product had already failed when checked upon"
 
 # starting lambda value and stopping condition
-lambda <- 100
-stop <- 0.001
+lambda_0 <- 100
+epsilon <- 0.001 # stopping condition
 
-# EM algorithm
-E_loglik <- function(lambda){
-  (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda - z/(exp(lambda*z -1))) -
-    (sum(log(1-exp(-lambda*z))))
-}
+k <- 1 # iteration counter 
+max_k <- 100 # maximum number of iterations
+lambdas <- lambda_0 # vector of lambda values, starting with lambda_0
 
-current_id <- 1
-max_id <- 1000
-L <- c(-Inf)
+####################### EM Algorithm ##############################
 
-while(current_id < max_id){
-  q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* xp(-lambda * z))
-  L <- c(L,Exp_llik(lambda)) # loglik
+while(k < max_k){
+  lambda=1
+  lambdas[k+1] <- optimise(get_Q(lambdas[[k]]), interval = c(-100, 100), maximum = TRUE)$maximum
   
-  if(abs(L[current_id+1] - L[current_id]) <=stop){
-    cat("Lambda found = ", lambda,"\nLog likelihood = " , L[current_id+1])
+  if(abs(lambdas[[k]] - lambdas[[k+1]]) < epsilon){
+    print(paste("EM algorithm stopped at lambda =", lambdas[[k+1]], "after", k, "iterations"))
     break
   }
-  lambda <- optim(lambda, E_loglik, method="Brent")[[1]]
-  current_id <- current_id +1
+  
+  k <- k +1
 }
+
+print(lambdas)
 ```
 
 ### 5.
@@ -1077,13 +1092,13 @@ histograms in task 1.
 ```{r 2.5}
 #2.5
 
-lambda <- # value
+lambda <- lambdas[length(lambdas)]
 
 hist(as.numeric(data[,1]), freq=F, main="Histogram of all data")
-lines(density(as.numeric(data[,1]), adjust = 1/lambda), lwd = 2)
+curve(dexp(x, rate = lambda), from=0, to=10, col='blue', add=TRUE, lwd = 2)
 
 hist(as.numeric(data[which(data[,2]==1),1]), freq=F, main="Histogram of cens=1 data")
-lines(density(as.numeric(data[which(data[,2]==1),1]), adjust = 1/lambda), lwd = 2)
+curve(dexp(x, rate = lambda), from=0, to=10, col='blue', add=TRUE, lwd = 2)
 
 ```
 
@@ -1157,7 +1172,7 @@ for(i in 1:1000){
   L <- c(-Inf)
 
   while(current_id < max_id){
-    q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* xp(-lambda * z))
+    q <- (1/(1-exp(-lambda * z)))*((1/lambda) -(z + (1/lambda))* exp(-lambda * z))
     L <- c(L,Exp_llik(lambda)) # loglik
   
     if(abs(L[current_id+1] - L[current_id]) <=stop){

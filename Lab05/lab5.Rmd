@@ -49,6 +49,7 @@ lines(data$Day_of_year, model2$fitted, col="red")
 
 ```
 There seems to be a slight downward trend in the data as shown by the red lines. This suggests that the lottery is not completely random and is dependent on the day of the year.
+
 ## 3.
 
 In order to check if the lottery is random, one can use various statistics. One such possibility is based on the expected responses. The fitted loess smoother provides an estimate $\hat{Y}$ as a function of X. It the lottery was random, we would expect $\hat{Y}$ to be a flat line, equaling the empirical mean of the observed responses, Y . The statistic we will consider will be $$ S = \sum_{i=1}^{n}|\hat{Y}_i-\bar{Y}| $$
