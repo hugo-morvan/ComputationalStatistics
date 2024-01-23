@@ -1131,43 +1131,46 @@ times the following procedure:
 
 -(c) Estimate $\lambda$ both by your EM-algorithm, and maximum likelihood based on the uncensored observations. Compare the distributions of the estimates of $\lambda$ from the two methods. Plot the histograms, report whether they both seem unbiased, and what is the variance of the estimators.
 
-```{r 2.6, eval=FALSE, include=FALSE}
+```{r 2.6}
 #2.6
 
-bootstrap <- matrix(NA, ncol = 2, nrow = 1000)
+lambda_hat <- lambda_ks[length(lambda_ks)]
+
 MLE_lambda_hat <- c()
-
-n <- 1000
-# MLE 
-# TO BE REWORKED
-for (i in 1:n) {
-  bootstrap[,1] <- rexp(n, lambda)
-  bootstrap[,2] <- 1
-  bootstrap[1:m,1] <- runif(m, 0, max(as.numeric(data[which(data[,2]==2),1])))
-  bootstrap[1:m,2] <- 2
-  MLE_lambda_hat[i] <- n/sum(bootstrap[(m+1):n,1])
-}
-
 EM_lambda_hat  <- c()
 
-for(i in 1:1000){
-  
+### Number of bootstrap samples ###
+B <- 1000
+###################################
+
+for(i in 1:B){
   #Bootstrap data: 
   # Draw a 1000 samples from rexp with parameter lambda_hat
-  
+  bootstrap_data <- rexp(1000, rate = lambda_hat)
   #Sample from this data a number of samples = to the number of censored data un the original data (189)
+  bootstrap_censored <- sample(bootstrap_data, 189)
   
   #Censor them 
+  for (j in 1:length(bootstrap_censored)){
+    bootstrap_censored[j] <- runif(1, min = 0, max = bootstrap_censored[j])
+  }
+  bootstrap_uncensored <- cbind(bootstrap_data[1:811], rep(1,811))
+  bootstrap_censored <- cbind(bootstrap_censored, rep(2,189))
+  combined_bootstrap_data <- rbind(bootstrap_uncensored, bootstrap_censored)
   
   ##################### Parameters #####################
   # uncensored and censored number of observations
-  n <- length(which(data[,2]==1))
-  m <- length(which(data[,2]==2))
+  n <- length(which(combined_bootstrap_data[,2]==1))
+  m <- length(which(combined_bootstrap_data[,2]==2))
   
   # uncensored and censored observations
-  x <- as.numeric(data[which(data[,2]==1),1]) #Uncensored observations
-  c <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
+  x <- as.numeric(combined_bootstrap_data[which(combined_bootstrap_data[,2]==1),1]) #Uncensored observations
+  c <- as.numeric(combined_bootstrap_data[which(combined_bootstrap_data[,2]==2),1]) #Censored observations
   
+  ####################### MLE #######################
+  MLE_lambda_hat[i] <- 1/mean(x)
+  
+  ####################### EM Algorithm ##############################
   # starting lambda value and stopping conditions
   lambda_0 <- 100 # starting value for lambda_k
   epsilon <- 0.001 # stopping condition
@@ -1176,8 +1179,6 @@ for(i in 1:1000){
   # initialization of the while loop
   k <- 1 # iteration counter 
   lambda_ks <- lambda_0 # vector of lambda values, starting with lambda_0
-  
-  ####################### EM Algorithm ##############################
   
   while(k < max_k){
     # E-step
@@ -1196,17 +1197,22 @@ for(i in 1:1000){
   EM_lambda_hat[i] <- lambda_ks[length(lambda_ks)]
 }
 
-# lambda hat graphs
+# lambda_hat graphs
 par(mfrow=c(1,2))
 hist(MLE_lambda_hat)
 hist(EM_lambda_hat)
 
-# variances
-var(MLE_lambda_hat)
-var(EM_lambda_hat)
-
+# Variances
+cat("Variance of MLE_lambda_hat: ", var(MLE_lambda_hat), "\n")
+cat("Variance of EM_lambda_hat: ", var(EM_lambda_hat), "\n")
 
 ```
+
+The histograms for the two methods look similar. Both methods seem unbiased. The variance is `r var(MLE_lambda_hat)` for the MLE and `r var(EM_lambda_hat)` for the EM algorithm.
+
+# Sources
+
+Al-Athari, F. M. (2008). Estimation of the mean of truncated exponential distribution. Journal of Mathematics and Statistics, 4(4), 284–288. https://doi.org/10.3844/jmssp.2008.284.288
 
 # Appendix
 
