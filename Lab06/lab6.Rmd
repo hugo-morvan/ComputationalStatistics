@@ -1022,12 +1022,19 @@ $$log L_{x,y \leq c}(\lambda) = \sum_{i=1}^n log(\lambda e^{-\lambda x_i}) + \su
 $$ = n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda - \lambda \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda c_j})$$
 
 ### 3. 
+The goal now is to derive an EM algorithm that estimates $\lambda$. Based on the above found likelihood function, derive the EM algorithm for estimating $\lambda$. The formula in the M-step can be differentiated, but the derivative is non-linear in terms of $\lambda$ so its zero might need to be found numerically.
+
+The formula for the Q function in the E-step is:
 
 $$Q(\lambda, \lambda^k) = E[log L_{x,y \leq c}(\lambda|X, Y) | \lambda^k,X]$$ 
-$$ = E[n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda^k - \lambda^k \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})]$$ 
-$$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda^k - \lambda^k E[\sum_{j=1}^m y_j] - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
-$$ = n \log\lambda-n + m \log \lambda^k - \lambda^k m(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1}) - \sum_{j=1}^m \log(1-e^{- \lambda^k c_j})$$ 
-since $E[\sum_{i=1}^n x_i] = n/\lambda$ and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda^k}-\frac{c}{e^{\lambda c}-1})$ (Source : Al-Athari 2008). where $\lambda^k$ is the current estimate of $\lambda$.
+
+$$ = E[n \log\lambda-\lambda \sum_{i=1}^n x_i + m \log \lambda - \lambda \sum_{j=1}^m y_j - \sum_{j=1}^m \log(1-e^{- \lambda c_j})]$$ 
+
+$$ = n \log\lambda-\lambda E[\sum_{i=1}^n x_i] + m \log \lambda - \lambda E[\sum_{j=1}^m y_j] - \sum_{j=1}^m \log(1-e^{- \lambda c_j})$$.
+
+Since $E[\sum_{i=1}^n x_i] = n \bar{x}$ for the exponential distribution and $E[\sum_{j=1}^m y_j] = m*(\frac{1}{\lambda}-\frac{c}{e^{\lambda c}-1})$ for the truncated exponential distribution (Source : Al-Athari 2008); we obtain the final equation : 
+$$Q(\lambda, \lambda^k) = n \log\lambda- \lambda n\bar{x} + m \log \lambda - \lambda \sum_{j=1}^m (\frac{1}{\lambda^{(k)}}-\frac{c_j}{e^{\lambda^{(k)} c_j}-1}) - \sum_{j=1}^m \log(1-e^{- \lambda c_j})$$ 
+ where $\lambda^k$ is the current estimate of $\lambda$ at the iteration k of the EM algorithm.
 
 ### 4.
 
@@ -1040,7 +1047,8 @@ How many iterations were required?
 # 2.4
 
 # EM algorithm
-get_Q <- function(lambda_k){ #Given lambda and lambda_k, returns Q(lambda, lambda_k) to be optimised
+get_Q <- function(lambda_k){ 
+  #Given lambda and lambda_k, returns Q(lambda, lambda_k) to be optimised
   Q <- function(lambda){
     n*log(lambda) - lambda*n*mean(x) + m*log(lambda) -lambda*sum((1/lambda_k)-(c/(exp(lambda_k*c)-1))) - sum(log(1-exp(-lambda*c)))
   }
@@ -1073,13 +1081,13 @@ while(k < max_k){
   Q <- get_Q(lambda_ks[k])
   # M-step
   lambda_k <- optimise(Q, interval = c(0,100), maximum = TRUE)$maximum
+  lambda_ks <- c(lambda_ks, lambda_k)
   # stopping condition
   if(abs(lambda_k - lambda_ks[k]) < epsilon){
     print(paste("EM algorithm stopped at iteration", k))
     break
   }
-  # update
-  lambda_ks <- c(lambda_ks, lambda_k)
+  # update k
   k <- k +1
 }
 
@@ -1117,88 +1125,85 @@ this end we will use a parametric bootstrap. Repeat 1000 (reduce if
 computational time is too long---but carefully report the running times)
 times the following procedure:
 
--   
+- (a) Simulate the same number of data points as in the original data,from the exponential $\hat\lambda$ distribution.
 
-    (a) Simulate the same number of data points as in the original data,
-        from the exponential $\hat\lambda$ distribution.
+- (b) Randomly select the same number of points as in the original data for censoring. For each observation for censoring---sample a new time from the uniform distribution on [0, true time]. Remember that the observation was censored.
 
--   
+-(c) Estimate $\lambda$ both by your EM-algorithm, and maximum likelihood based on the uncensored observations. Compare the distributions of the estimates of $\lambda$ from the two methods. Plot the histograms, report whether they both seem unbiased, and what is the variance of the estimators.
 
-    (b) Randomly select the same number of points as in the original
-        data for censoring. For each observation for censoring---sample
-        a new time from the uniform distribution on [0, true time].
-        Remember that the observation was censored.
-
--   
-
-    (c) Estimate $\lambda$ both by your EM-algorithm, and maximum
-        likelihood based on the uncensored observations. Compare the
-        distributions of the estimates of $\lambda$ from the two
-        methods. Plot the histograms, report whether they both seem
-        unbiased, and what is the variance of the estimators.
-
-```{r 2.6}
+```{r 2.6, eval=FALSE, include=FALSE}
 #2.6
 
 bootstrap <- matrix(NA, ncol = 2, nrow = 1000)
-lambda_hat <- c()
+MLE_lambda_hat <- c()
 
 n <- 1000
-
+# MLE 
+# TO BE REWORKED
 for (i in 1:n) {
   bootstrap[,1] <- rexp(n, lambda)
   bootstrap[,2] <- 1
   bootstrap[1:m,1] <- runif(m, 0, max(as.numeric(data[which(data[,2]==2),1])))
   bootstrap[1:m,2] <- 2
-  lambda_hat[i] <- n/sum(bootstrap[(m+1):n,1])
+  MLE_lambda_hat[i] <- n/sum(bootstrap[(m+1):n,1])
 }
 
 EM_lambda_hat  <- c()
 
 for(i in 1:1000){
+  
+  #Bootstrap data: 
+  # Draw a 1000 samples from rexp with parameter lambda_hat
+  
+  #Sample from this data a number of samples = to the number of censored data un the original data (189)
+  
+  #Censor them 
+  
+  ##################### Parameters #####################
   # uncensored and censored number of observations
-  n <- length(which(bootstrap[,2]==1))
-  m <- length(which(bootstrap[,2]==2))
-
+  n <- length(which(data[,2]==1))
+  m <- length(which(data[,2]==2))
+  
   # uncensored and censored observations
-  x <- as.numeric(bootstrap[which(bootstrap[,2]==1),1])
-  z <- as.numeric(bootstrap[which(bootstrap[,2]==2),1])
-
-  # starting lambda value and stopping condition
-  lambda <- 100
-  epsilon <- 0.001
-
-  # EM algorithm
-  get_Q <- function(lambda){
-    (n * log(lambda)) - n + (m * log(lambda)) - lambda * m * ( 1/lambda) -
-      (sum(log(1-exp(-lambda*z))))
-  }
-
-  k <- 1
-  k_max <- 1000
-  L2 <- c(-Inf)
-
-  while(k < k_max){
-    L2 <- c(L,get_Q(lambda)) # loglik
-    if(abs(L2[k+1] - L2[k]) < epsilon){
-      print(paste("EM algorithm stopped at lambda =", lambda, "after", 
-                  k, "iterations"))
+  x <- as.numeric(data[which(data[,2]==1),1]) #Uncensored observations
+  c <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
+  
+  # starting lambda value and stopping conditions
+  lambda_0 <- 100 # starting value for lambda_k
+  epsilon <- 0.001 # stopping condition
+  max_k <- 100 # maximum number of iterations
+  
+  # initialization of the while loop
+  k <- 1 # iteration counter 
+  lambda_ks <- lambda_0 # vector of lambda values, starting with lambda_0
+  
+  ####################### EM Algorithm ##############################
+  
+  while(k < max_k){
+    # E-step
+    Q <- get_Q(lambda_ks[k])
+    # M-step
+    lambda_k <- optimise(Q, interval = c(0,100), maximum = TRUE)$maximum
+    # stopping condition
+    if(abs(lambda_k - lambda_ks[k]) < epsilon){
+      #print(paste("EM algorithm stopped at iteration", k))
       break
     }
-    lambda <- optim(lambda, get_Q, method="Brent")[[1]]
+    # update
+    lambda_ks <- c(lambda_ks, lambda_k)
     k <- k +1
-    EM_lambda_hat[i] <- lambda
   }
+  EM_lambda_hat[i] <- lambda_ks[length(lambda_ks)]
 }
 
 # lambda hat graphs
-par(mfrow=c(2,1))
-hist(lambda_hat_mle)
-hist(lambda_hat_em)
+par(mfrow=c(1,2))
+hist(MLE_lambda_hat)
+hist(EM_lambda_hat)
 
 # variances
-var(lambda_hat_mle)
-var(lambda_hat_em)
+var(MLE_lambda_hat)
+var(EM_lambda_hat)
 
 
 ```
