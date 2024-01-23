@@ -1040,9 +1040,11 @@ How many iterations were required?
 # 2.4
 
 # EM algorithm
-get_Q <- function(lambda){
-  n * log(lambda) - n + (m * log(lambda)) - lambda * m * (1/lambda) - 
-    (sum(log(1-exp(-lambda*z))))
+get_Q <- function(lambda_k){ #Given lambda and lambda_k, returns Q(lambda, lambda_k) to be optimised
+  Q <- function(lambda){
+    n*log(lambda) - lambda*n*mean(x) + m*log(lambda) -lambda*sum((1/lambda_k)-(c/(exp(lambda_k*c)-1))) - sum(log(1-exp(-lambda*c)))
+  }
+  return(Q)
 }
 
 ##################### Parameters #####################
@@ -1053,33 +1055,35 @@ m <- length(which(data[,2]==2))
 
 # uncensored and censored observations
 x <- as.numeric(data[which(data[,2]==1),1]) #Uncensored observations
-z <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
+c <- as.numeric(data[which(data[,2]==2),1]) #Censored observations
 
-c <- 0 # truncation point, "the product had already failed when checked upon"
-
-# starting lambda value and stopping condition
-lambda <- 100
+# starting lambda value and stopping conditions
+lambda_0 <- 100 # starting value for lambda_k
 epsilon <- 0.001 # stopping condition
-
-k <- 1 # iteration counter 
 max_k <- 100 # maximum number of iterations
-lambdas <- lambda # vector of lambda values, starting with lambda_0
-L <- c(-Inf) # loglik vector for stopping condition
+
+# initialization of the while loop
+k <- 1 # iteration counter 
+lambda_ks <- lambda_0 # vector of lambda values, starting with lambda_0
 
 ####################### EM Algorithm ##############################
 
 while(k < max_k){
-  L <- c(L, get_Q(lambdas[k]))
-  if(abs(L[k+1] - L[k]) < epsilon ){
-    print(paste("EM algorithm stopped at lambda =", lambda, "after", k, "iterations"))
+  # E-step
+  Q <- get_Q(lambda_ks[k])
+  # M-step
+  lambda_k <- optimise(Q, interval = c(0,100), maximum = TRUE)$maximum
+  # stopping condition
+  if(abs(lambda_k - lambda_ks[k]) < epsilon){
+    print(paste("EM algorithm stopped at iteration", k))
     break
   }
-  lambda <- optim(lambda, get_Q, method="BFGS", control = list(fnscale=-1))[[1]]
-  lambdas <- c(lambdas, lambda)
+  # update
+  lambda_ks <- c(lambda_ks, lambda_k)
   k <- k +1
 }
 
-print(lambdas)
+print(lambda_ks)
 ```
 
 ### 5.
@@ -1090,13 +1094,18 @@ histograms in task 1.
 ```{r 2.5}
 #2.5
 
-lambda <- lambdas[length(lambdas)]
+lambda_graph <- lambda_ks[length(lambda_ks)]
+
+par(mfrow=c(1,3))
 
 hist(as.numeric(data[,1]), freq=F, main="Histogram of all data")
-curve(dexp(x, rate = lambda), from=0, to=10, col='blue', add=TRUE, lwd = 2)
+curve(dexp(x, rate = lambda_graph), from=0, to=10, col='blue', add=TRUE, lwd = 2)
 
 hist(as.numeric(data[which(data[,2]==1),1]), freq=F, main="Histogram of cens=1 data")
-curve(dexp(x, rate = lambda), from=0, to=10, col='blue', add=TRUE, lwd = 2)
+curve(dexp(x, rate = lambda_graph), from=0, to=10, col='blue', add=TRUE, lwd = 2)
+
+hist(as.numeric(data[which(data[,2]==2),1]), freq=F, main="Histogram of cens=2 data")
+curve(dexp(x, rate = lambda_graph), from=0, to=10, col='blue', add=TRUE, lwd = 2)
 
 ```
 
